@@ -91,9 +91,7 @@ def process_email(mail):
                     ticket_id=ticket_number,
                     email_subject=subject,
                     email_body=body,
-                    classification_info = classification,
-                    extracted_info={"priority": "critical", "system": "web-server-01"}
-                )
+                    classification_info = classification)
             else :
                 # processing previously process email
                 print(f"Email ID: {sender} => Ticket: {ticket_number} => Duplicate")

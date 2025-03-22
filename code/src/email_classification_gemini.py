@@ -57,7 +57,7 @@ def update_request_for_duplicate(subject, body, attachment_text, previous_json_r
 
         Analyze this new email in the context of the previous email and its classification. Determine if this new email provides any updates or additional information to the existing service request.
 
-        If the new email contains relevant updates (e.g., changes in amount, new dates, additional details, clarification on the request, or confirmation), update the corresponding fields in the `extracted_information` section of the `previous_json_response`. If the new email indicates a change in the primary request type or introduces a new request type, update the `request_types` list accordingly, providing new confidence scores and reasoning.
+        If the new email contains relevant updates (e.g., changes in amount, new dates, additional details, clarification on the request, or confirmation), update the corresponding fields of the `previous_json_response`. If the new email indicates a change in the primary request type or introduces a new request type, update the `request_types` list accordingly, providing new confidence scores and reasoning.
 
         If the new email does not provide any significant updates or is merely an acknowledgement or a minor comment without new actionable information, you can return the original `previous_json_response` without modifications.
 

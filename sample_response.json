@@ -1,36 +1,136 @@
+[
 {
-  "request_types": [
-    {
-      "type": "Request Type: Adjustment",
-      "subtype": "Request Sub Type: Reallocation Principal",
-      "confidence_score": "0.95",
-      "reasoning": "The email subject and body explicitly mention 'Loan Adjustment Request' and 'reallocation of funds'. The email also specifies a reallocation of funds amounting to INR 1,500.00 from Department A to Department B, indicating reallocation of principal."
-    },
-    {
-      "type": "Request Type: Adjustment",
-      "subtype": "Request Sub Type: Reallocation Fees",
-      "confidence_score": "0.75",
-      "reasoning": "The email asks about the process and associated fees for the reallocation, specifically mentioning a 'Reallocation Fee'. This suggests an inquiry related to reallocation fees."
+  "id":1,
+  "subject":"<email-subject>",
+  "email_body":"<email-body>",
+  "sender":"<sender-email>",
+  "is_duplicate": false,
+  "classifications": [
+      {
+        "request_type": "Adjustment",
+        "confidence_score": 0.7,
+        "reasoning": "The email requests an adjustment for a commercial loan and a reallocation of funds.",
+        "sub_request_type": []
+      },
+      {
+        "request_type": "AU Transfer",
+        "confidence_score": 0.1,
+        "reasoning": "The email does not contain any information related to AU Transfers.",
+        "sub_request_type": []
+      },
+      {
+        "request_type": "Closing Notice",
+        "confidence_score": 0.1,
+        "reasoning": "The email does not contain any information related to closing notices.",
+        "sub_request_type": [
+          {
+            "sub_request_type": "Reallocation Fees",
+            "confidence_score": 0.6,
+            "sub_reasoning": "The email mentions a potential Reallocation Fee."
+          },
+          {
+            "sub_request_type": "Amendment Fees",
+            "confidence_score": 0.1,
+            "sub_reasoning": "No information about amendment fees is present."
+          },
+          {
+            "sub_request_type": "Reallocation Principal",
+            "confidence_score": 0.1,
+            "sub_reasoning": "No information about reallocation principal is present."
+          }
+        ]
+      },
+      {
+        "request_type": "Commitment Change",
+        "confidence_score": 0.1,
+        "reasoning": "The email does not contain any information related to commitment changes.",
+        "sub_request_type": [
+          {
+            "sub_request_type": "Cashless Roll",
+            "confidence_score": 0.1,
+            "sub_reasoning": "No information about cashless roll is present."
+          },
+          {
+            "sub_request_type": "Decrease",
+            "confidence_score": 0.1,
+            "sub_reasoning": "No information about decrease in commitment is present."
+          },
+          {
+            "sub_request_type": "Increase",
+            "confidence_score": 0.1,
+            "sub_reasoning": "No information about increase in commitment is present."
+          }
+        ]
+      },
+      {
+        "request_type": "Fee Payment",
+        "confidence_score": 0.1,
+        "reasoning": "The email does not contain any information related to fee payments.",
+        "sub_request_type": [
+          {
+            "sub_request_type": "Ongoing Fee",
+            "confidence_score": 0.1,
+            "sub_reasoning": "No information about ongoing fees is present."
+          },
+          {
+            "sub_request_type": "Letter of Credit Fee",
+            "confidence_score": 0.1,
+            "sub_reasoning": "No information about letter of credit fees is present."
+          }
+        ]
+      },
+      {
+        "request_type": "Money Movment-Inbound",
+        "confidence_score": 0.1,
+        "reasoning": "The email does not contain any information related to inbound money movements.",
+        "sub_request_type": [
+          {
+            "sub_request_type": "Principal",
+            "confidence_score": 0.1,
+            "sub_reasoning": "No information about principal is present."
+          },
+          {
+            "sub_request_type": "Interest",
+            "confidence_score": 0.1,
+            "sub_reasoning": "No information about interest is present."
+          },
+          {
+            "sub_request_type": "Principal and Interest",
+            "confidence_score": 0.1,
+            "sub_reasoning": "No information about principal and interest is present."
+          },
+          {
+            "sub_request_type": "Principal and Interest and Fees",
+            "confidence_score": 0.1,
+            "sub_reasoning": "No information about principal, interest, and fees is present."
+          }
+        ]
+      },
+      {
+        "request_type": "Money Movment-Outbound",
+        "confidence_score": 0.1,
+        "reasoning": "The email does not contain any information related to outbound money movements.",
+        "sub_request_type": [
+          {
+            "sub_request_type": "Timebound",
+            "confidence_score": 0.1,
+            "sub_reasoning": "No information about time-bound money movement is present."
+          },
+          {
+            "sub_request_type": "Foriegn Currency",
+            "confidence_score": 0.1,
+            "sub_reasoning": "No information about foreign currency money movement is present."
+          }
+        ]
+      }
+    ],
+    "additional_fields": {
+      "amount": "1,500.00",
+      "currency": "INR",
+      "loan_number": "LN-54321",
+      "previous_allocation": "Department A",
+      "new_allocation": "Department B",
+      "fee_type": "Reallocation Fee"
     }
-  ],
-  "extracted_information": {
-    "date": "2025-03-22",
-    "time": "14:01",
-    "pnr": "Not Found",
-    "departure": "Not Found",
-    "arrival": "Not Found",
-    "amount": "1500.00",
-    "transaction_id": "Not Found",
-    "loan_number": "LN-54321",
-    "account_number": "LN-54321",
-    "expiration_date": "Not Found",
-    "deal_name": "Not Found",
-    "previous_allocation": "Department A",
-    "new_allocation": "Department B",
-    "principal_amount": "1500.00",
-    "interest_amount": "Not Found",
-    "fee_type": "Reallocation Fee",
-    "submission_document_type": "Not Found",
-    "other_fields": {}
   }
-}
+]

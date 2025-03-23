@@ -82,47 +82,66 @@ def classify_email(subject, body, attachment_text):
     print(json_response)
     return json_response 
 
-# Fetch unread emails
-async def fetch_and_classify_emails(websocket):
-    status, email_ids = mail.search(None, "ALL") # "UNSEEN"
-    email_ids = email_ids[0].split()
+    merged_prompt = f"""Read the content below and classify the content based on the given classifications. 
 
-    for email_id in email_ids:
-        status, data = mail.fetch(email_id, "(RFC822)")
-        raw_email = data[0][1]
-        msg = email.message_from_bytes(raw_email, policy=default)
+    {classification_data}
+    Also provide the confidence score for each classification.
+    
+    **Content to Analyze:**
+    Subject: {subject}
+    Body: {body}
+    Attachments: {attachment_text}
 
-        # Extract subject and body
-        subject = msg["subject"] or ""
-        sender = msg["from"]
-        body = ""
-        attachment_text = ""
+    **Output JSON Format:**
+    {{
+    "request_types": [
+        {{
+        "type": "[Classification Type]",
+        "subtype": "[Classification Subtype]",
+        "confidence_score": [Confidence Score between 0.0-1.0],
+        "reasoning": "[Explanation for classification]"
+        }}
+        // Add more types/subtypes if applicable
+    ],
+    "extracted_information": {{
+        "date": "[Extracted Date in YYYY-MM-DD format or 'Not Found']",
+        "time": "[Extracted Time in HH:MM format or 'Not Found']",
+        "pnr": "[Extracted PNR number or 'Not Found']",
+        "departure": "[Extracted Departure location or 'Not Found']",
+        "arrival": "[Extracted Arrival location or 'Not Found']",
+        "amount": "[Extracted Amount or 'Not Found']",
+        "transaction_id": "[Extracted Transaction ID or 'Not Found']",
+        "loan_number": "[Extracted Loan Number or 'Not Found']",
+        "account_number": "[Extracted Account Number or 'Not Found']",
+        "expiration_date": "[Extracted Expiration Date in YYYY-MM-DD or 'Not Found']",
+        "deal_name": "[Extracted Deal Name or 'Not Found']",
+        "previous_allocation": "[Extracted Previous Allocation or 'Not Found']",
+        "new_allocation": "[Extracted New Allocation or 'Not Found']",
+        "principal_amount": "[Extracted Principal Amount or 'Not Found']",
+        "interest_amount": "[Extracted Interest Amount or 'Not Found']",
+        "fee_type": "[Extracted Fee Type or 'Not Found']",
+        "submission_document_type": "[Extracted Document Type or 'Not Found']"
+        // you can also add more fields which might be relevant to that specific request type
+    }}
+    }}
+    **Rules:**
+    1. Provide confidence scores for each classification
+    2. Include reasoning for classifications
+    3. Use 'Not Found' for missing information
+    4. Maintain all fields from both original output formats
+    5. Follow strict JSON formatting
 
-        if msg.is_multipart():
-            for part in msg.walk():
-                content_type = part.get_content_type()
-                content_disposition = str(part.get("Content-Disposition"))
+    Return only the JSON response with your analysis."""
 
-                if "attachment" in content_disposition:
-                    attachment_text += process_attachment(part) + "\n"
-                elif content_type == "text/html":
-                    body += extract_plain_text(part.get_payload(decode=True).decode(errors="ignore")) + "\n"
-                elif content_type == "text/plain":
-                    body += part.get_payload(decode=True).decode(errors="ignore") + "\n"
-        else:
-            body = extract_plain_text(msg.get_payload(decode=True).decode(errors="ignore"))
+# Gmail IMAP credentials
+EMAIL = "nextgenthinkers2025@gmail.com"  # Replace with your email "jagadeesh.soppimat@gmail.com","nextgenthinkers2025@gmail.com"
+PASSWORD = "whvh mirp guwi yquu"  # Use App Password if needed "wiax ixav dqzz xzif", "whvh mirp guwi yquu"
+IMAP_SERVER = "imap.gmail.com"  # Change if using Outlook/Yahoo
 
-        # Classify email based on subject, body, and attachments
-        classification = classify_email(subject, body, attachment_text)
-        await websocket.send(classification)
-        await asyncio.sleep(1)
-        
-        print(f"\n📧 Email Subject: {subject}")
-        print(f"📩 From: {sender}")
-        print(f"📜 Message:\n{body}")
-        print(f"📜 attachment_text:\n{attachment_text}")
-        print(f"🔍 Email Classified as: {classification}")
-        print("-" * 50)
+# Connect to IMAP server
+mail = imaplib.IMAP4_SSL(IMAP_SERVER)
+mail.login(EMAIL, PASSWORD)
+mail.select("inbox")
 
 # Fetch unread emails
 # fetch_and_classify_emails()

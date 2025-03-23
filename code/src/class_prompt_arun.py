@@ -76,14 +76,16 @@ def classify_email(subject, body, attachment_text):
 
     output_json_example = json.dumps(
         {
-            "request_typasdfe": "",
+            "request_type": "",
             "confidence_score": 0.0,
             "sub_request_type": [
                 {
                     "sub_request_type": "",
-                    "confidence_score": 0.0
+                    "confidence_score": 0.0,
+                    "reasoning":""
                 }
-            ]
+            ],
+            "reasoning":""
         }
     )
     additional_information_json_format = json.dumps({

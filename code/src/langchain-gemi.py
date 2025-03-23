@@ -150,7 +150,6 @@ def update_request_for_duplicate_sequential_langchain(subject, body, attachment_
         llm = get_gemini_model(api_key)
 
         previous_json_response_str = json.dumps(previous_json_response)
-        print("12"*12)
 
         # Step 1: Determine if the new email is related and if it provides updates
         prompt_1 = PromptTemplate(
@@ -163,10 +162,9 @@ def update_request_for_duplicate_sequential_langchain(subject, body, attachment_
             Content: {body}
             Attachments: {attachment_text}
 
-            Analyze this new email. Does it provide any significant updates or additional information to the existing service request? Answer with 'update', 'no_update', or 'new_request'."""
+            Analyze this new email. Does it provide any significant updates or additional information to the existing service request which outputs this service request data {previous_json_response_str}? Answer with 'update', 'no_update', or 'new_request'."""
         )
         chain_1 = LLMChain(llm=llm, prompt=prompt_1, output_key="update_status")
-        print("13"*12)
 
         # Step 2: Identify updates to extracted information (if 'update')
         prompt_2_update_info = PromptTemplate(
@@ -182,7 +180,6 @@ def update_request_for_duplicate_sequential_langchain(subject, body, attachment_
             Identify any new or updated information in this new email that should update the 'extracted_information' section of the JSON. Output the updates as a JSON object where keys are the fields to update and values are the new values. If no updates, output {previous_json_response_str}."""
         )
         chain_2_update_info = LLMChain(llm=llm, prompt=prompt_2_update_info, output_key="extracted_info_updates")
-        print("14"*12)
 
         # Step 3: Identify updates to request types (if 'update')
         prompt_3_update_types = PromptTemplate(
@@ -198,7 +195,6 @@ def update_request_for_duplicate_sequential_langchain(subject, body, attachment_
             Does the new email indicate any changes to the primary request type or introduce a new request type? If so, output the entire updated 'request_types' list as a JSON array of objects, including confidence scores and reasoning for any changes or additions. If no changes, output ''."""
         )
         chain_3_update_types = LLMChain(llm=llm, prompt=prompt_3_update_types, output_key="request_type_updates")
-        print("126"*12)
 
         # Step 4: Classify as new request (if 'new_request')
         prompt_4_new_request = PromptTemplate(
@@ -234,10 +230,8 @@ def update_request_for_duplicate_sequential_langchain(subject, body, attachment_
             "sub_request_types_dict": json.dumps(SUB_REQUEST_TYPES),
             "output_format": OUTPUT_JSON_FORMAT
         })
-        print("1hf2"*12)
 
         update_status = result.get("update_status", "").lower()
-        print("12ret"*12)
 
         if update_status == "update":
             extracted_info_updates_str = result.get("extracted_info_updates", "{}")
@@ -258,7 +252,7 @@ def update_request_for_duplicate_sequential_langchain(subject, body, attachment_
         elif update_status == "new_request":
             new_classification_json_str = result.get("new_classification_json", "{}")
             try:
-                new_classification = json.loads(new_classification_json_str)
+                new_classification = json.loads(new_classification_json_str.strip().lstrip("```json").rstrip("```"))
                 return new_classification
             except json.JSONDecodeError as e:
                 print(f"Error decoding new classification JSON: {e}")
@@ -269,6 +263,7 @@ def update_request_for_duplicate_sequential_langchain(subject, body, attachment_
     except Exception as e:
         print(f"Error updating request for duplicate with sequential Langchain: {e}")
         return None
+
 if __name__ == "__main__":
     # Example usage for classify_email_sequential_langchain
     sample_subject = "Loan Adjustment Request - Reallocation of Funds"
@@ -282,8 +277,8 @@ if __name__ == "__main__":
         print(json.dumps(classified_response_sequential, indent=2))
 
         # Example usage for update_request_for_duplicate
-        sample_subject_reply = "Re: Loan Adjustment Request - Reallocation of Funds"
-        sample_body_reply = "Just to clarify, the effective date for the reallocation should be March 25, 2025."
+        sample_subject_reply = "Issue of Auto Mobile loan s"
+        sample_body_reply = "Help me with this dispatching my account balance of amount 934543 Rs, for my automobile loan which is not receive by me"
         sample_attachment_text_reply = ""
 
         updated_response = update_request_for_duplicate_sequential_langchain(

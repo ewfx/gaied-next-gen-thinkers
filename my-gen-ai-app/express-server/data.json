@@ -1,0 +1,156 @@
+[
+    {
+    "id": 1,
+    "request_types": [
+      {
+        "type": "Adjustment",
+        "subtype": "Reallocation Principal",
+        "confidence_score": "0.95",
+        "reasoning": "The email subject and body explicitly mention 'Loan Adjustment Request' and 'reallocation of funds'. The email also specifies a reallocation of funds amounting to INR 1,500.00 from Department A to Department B, indicating reallocation of principal."
+      },
+      {
+        "type": "service request",
+        "subtype": "Reallocation Fees",
+        "confidence_score": "0.75",
+        "reasoning": "The email asks about the process and associated fees for the reallocation, specifically mentioning a 'Reallocation Fee'. This suggests an inquiry related to reallocation fees."
+      },
+      {
+        "type": "HR request",
+        "subtype": "Reallocation Fees",
+        "confidence_score": "0.75",
+        "reasoning": "The email asks about the process and associated fees for the reallocation, specifically mentioning a 'Reallocation Fee'. This suggests an inquiry related to reallocation fees."
+      }
+    ],
+    "extracted_information": {
+      "date": "2025-03-22",
+      "time": "14:01",
+      "pnr": "Not Found",
+      "departure": "Not Found",
+      "arrival": "Not Found",
+      "amount": "1500.00",
+      "transaction_id": "Not Found",
+      "loan_number": "LN-54321",
+      "account_number": "LN-54321",
+      "expiration_date": "Not Found",
+      "deal_name": "Not Found",
+      "previous_allocation": "Department A",
+      "new_allocation": "Department B",
+      "principal_amount34": "1500.00",
+      "interest_amount2": "Not Found",
+      "fee_type1": "Reallocation Fee",
+      "submission_document_type": "Not Found",
+      "other_fields": {}
+    }
+  },
+  {
+    "id": 2,
+    "request_types": [
+      {
+        "type": "Finance",
+        "subtype": "Reallocation Principal",
+        "confidence_score": "0.95",
+        "reasoning": "The email subject and body explicitly mention 'Loan Adjustment Request' and 'reallocation of funds'. The email also specifies a reallocation of funds amounting to INR 1,500.00 from Department A to Department B, indicating reallocation of principal."
+      },
+      {
+        "type": "HR request",
+        "subtype": "Reallocation Fees",
+        "confidence_score": "0.75",
+        "reasoning": "The email asks about the process and associated fees for the reallocation, specifically mentioning a 'Reallocation Fee'. This suggests an inquiry related to reallocation fees."
+      }
+    ],
+    "extracted_information": {
+      "date": "2025-03-22",
+      "time": "14:01",
+      "pnr": "Not Found",
+      "departure": "Not Found",
+      "arrival": "Not Found",
+      "amount": "1500.00",
+      "transaction_id": "Not Found",
+      "loan_number": "LN-54321",
+      "account_number": "LN-54321",
+      "expiration_date": "Not Found",
+      "deal_name": "Not Found",
+      "previous_allocation": "Department A",
+      "new_allocation": "Department B",
+      "principal_amount": "1500.00",
+      "interest_amount": "Not Found",
+      "fee_type": "Reallocation Fee",
+      "submission_document_type": "Not Found",
+      "other_fields": {}
+    }
+  },
+  {
+    "id": 3,
+    "request_types": [
+      {
+        "type": "Vacation",
+        "subtype": "Reallocation Principal",
+        "confidence_score": "0.95",
+        "reasoning": "The email subject and body explicitly mention 'Loan Adjustment Request' and 'reallocation of funds'. The email also specifies a reallocation of funds amounting to INR 1,500.00 from Department A to Department B, indicating reallocation of principal."
+      },
+      {
+        "type": "Travel Plan",
+        "subtype": "Reallocation Fees",
+        "confidence_score": "0.75",
+        "reasoning": "The email asks about the process and associated fees for the reallocation, specifically mentioning a 'Reallocation Fee'. This suggests an inquiry related to reallocation fees."
+      }
+    ],
+    "extracted_information": {
+      "date": "2025-03-22",
+      "time": "14:01",
+      "pnr": "Not Found",
+      "departure": "Not Found",
+      "arrival": "Not Found",
+      "amount": "1500.00",
+      "transaction_id": "Not Found",
+      "loan_number": "LN-54321",
+      "account_number": "LN-54321",
+      "expiration_date": "Not Found",
+      "deal_name": "Not Found",
+      "previous_allocation": "Department A",
+      "new_allocation": "Department B",
+      "principal_amount": "1500.00",
+      "interest_amount": "Not Found",
+      "fee_type": "Reallocation Fee",
+      "submission_document_type": "Not Found",
+      "other_fields": {}
+    }
+  },
+  {
+    "id": 4,
+    "request_types": [
+      {
+        "type": "Adjustment",
+        "subtype": "Reallocation Principal",
+        "confidence_score": "0.95",
+        "reasoning": "The email subject and body explicitly mention 'Loan Adjustment Request' and 'reallocation of funds'. The email also specifies a reallocation of funds amounting to INR 1,500.00 from Department A to Department B, indicating reallocation of principal."
+      },
+      {
+        "type": "Adjustment",
+        "subtype": "Reallocation Fees",
+        "confidence_score": "0.75",
+        "reasoning": "The email asks about the process and associated fees for the reallocation, specifically mentioning a 'Reallocation Fee'. This suggests an inquiry related to reallocation fees."
+      }
+    ],
+    "extracted_information": {
+      "date": "2025-03-22",
+      "time": "14:01",
+      "pnr": "Not Found",
+      "departure": "Not Found",
+      "arrival": "Not Found",
+      "amount": "1500.00",
+      "transaction_id": "Not Found",
+      "loan_number": "LN-54321",
+      "account_number": "LN-54321",
+      "expiration_date": "Not Found",
+      "deal_name": "Not Found",
+      "previous_allocation": "Department A",
+      "new_allocation": "Department B",
+      "principal_amount": "1500.00",
+      "interest_amount": "Not Found",
+      "fee_type": "Reallocation Fee",
+      "submission_document_type": "Not Found",
+      "other_fields": {}
+    }
+  }
+]

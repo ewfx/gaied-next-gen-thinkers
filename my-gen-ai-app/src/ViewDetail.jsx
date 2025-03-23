@@ -68,7 +68,7 @@ const ViewDetail = () => {
         rowGap: "30px",
       }}
     >
-      <h1>Subject: {row?.subject}</h1>
+      <h1>Confidance Score details</h1>
       <EnhancedTable
         source={"details"}
         keyData={key}
@@ -77,8 +77,8 @@ const ViewDetail = () => {
       />
       {otherInfo && Object.keys(otherInfo).length > 0 ? (
         <>
-          <h1>Other Details</h1>
-          <table style={{ borderCollapse: "collapse" }}>
+         <h1>Attributes Details</h1>
+          <table style={{ width: "50vw",textAlign: "justify",alignSelf: "anchor-center" }}>
             <tbody>
               {Object.keys(otherInfo || {}).map((key) => (
                 <tr key={key} style={{ border: "1px solid black" }}>

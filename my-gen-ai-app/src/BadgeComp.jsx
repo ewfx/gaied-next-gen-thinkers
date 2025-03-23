@@ -1,11 +1,11 @@
 import React from 'react';
 
-const BadgeComp = ({ text, color,handleClick }) => {
+const BadgeComp = ({ text, color,handleClick,selected }) => {
     const badgeStyle = {
         backgroundColor: color,
         padding: '10px',
         borderRadius: '100%',
-        color: 'white',
+        color: !selected?'black':'white',
         display: 'inline-block',
         cursor: 'pointer',
         fontWeight: 'bold'

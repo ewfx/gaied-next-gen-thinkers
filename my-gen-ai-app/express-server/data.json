@@ -13,6 +13,12 @@
         "subtype": "Reallocation Fees",
         "confidence_score": "0.75",
         "reasoning": "The email asks about the process and associated fees for the reallocation, specifically mentioning a 'Reallocation Fee'. This suggests an inquiry related to reallocation fees."
+      },
+      {
+        "type": "HR request",
+        "subtype": "Reallocation Fees",
+        "confidence_score": "0.75",
+        "reasoning": "The email asks about the process and associated fees for the reallocation, specifically mentioning a 'Reallocation Fee'. This suggests an inquiry related to reallocation fees."
       }
     ],
     "extracted_information": {
@@ -29,9 +35,9 @@
       "deal_name": "Not Found",
       "previous_allocation": "Department A",
       "new_allocation": "Department B",
-      "principal_amount": "1500.00",
-      "interest_amount": "Not Found",
-      "fee_type": "Reallocation Fee",
+      "principal_amount34": "1500.00",
+      "interest_amount2": "Not Found",
+      "fee_type1": "Reallocation Fee",
       "submission_document_type": "Not Found",
       "other_fields": {}
     }

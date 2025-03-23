@@ -178,14 +178,14 @@ function EnhancedTableToolbar(props) {
       ) : (
         <>
           <TextField id="standard-basic" label="Serach" variant="standard" onChange={props.handleSearch}/>
-          <Typography
+          {/* <Typography
             sx={{ flex: "1 1 100%" }}
             variant="h6"
             id="tableTitle"
             component="div"
           >
             Classification
-          </Typography>
+          </Typography> */}
         </>
       )}
     </Toolbar>

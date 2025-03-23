@@ -33,7 +33,7 @@ mail.login(EMAIL, PASSWORD)
 mail.select("inbox")
 
 # Search for all emails
-status, messages = mail.search(None, "ALL")
+status, messages = mail.search(None, "UNSEEN")
 email_ids = messages[0].split()
 
 def classify_email(text):

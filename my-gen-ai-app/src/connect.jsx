@@ -1,7 +1,7 @@
 import React, { useEffect, useState } from "react";
 import Button from "@mui/material/Button";
 import EnhancedTable from "./table";
-import { createData } from "./utils/utils";
+import { createData, getMaxConfidaentObject, getRequestTypesCount } from "./utils/utils";
 import { useContext } from "react";
 import { MyContext } from "./app-route";
 import BadgeComp from "./BadgeComp";
@@ -12,7 +12,9 @@ import MailIcon from "@mui/icons-material/Mail";
 const WebSocketComponent = () => {
   const [data, setData] = useState([{}]);
   const [row, setRow] = useState([{}]);
+  const [rowData, setRowData] = useState([{}]);
   const [headCells, setHeadCells] = useState([{}]);
+  const [typeCount, setTypeCount] = useState({});
   const [key, setKey] = useState([]);
   const { setContextData } = useContext(MyContext);
 
@@ -25,15 +27,7 @@ const WebSocketComponent = () => {
         const rows = [];
         let headCellsTemp = [];
         serverData?.forEach((element) => {
-          const maxConfidenceObject = element?.request_types.reduce(
-            (max, obj) => {
-              return parseFloat(obj.confidence_score) >
-                parseFloat(max.confidence_score)
-                ? obj
-                : max;
-            },
-            element.request_types[0]
-          );
+          const maxConfidenceObject = getMaxConfidaentObject(element);
           console.log("Object with max confidence_score:", maxConfidenceObject);
           rows.push({ ...maxConfidenceObject, id: element.id });
           const keys = Object.keys(maxConfidenceObject);
@@ -49,7 +43,10 @@ const WebSocketComponent = () => {
             });
           });
         });
-        setRow((prevRow) => [...rows]);
+        setTypeCount(getRequestTypesCount(rows));
+        console.log("Rows details:", getRequestTypesCount(rows));
+        setRow([...rows]);
+        setRowData( [...rows]);
         setHeadCells((prevHeadCells) => [
           ...headCellsTemp,
           {
@@ -66,7 +63,7 @@ const WebSocketComponent = () => {
 
     socket.onopen = () => {
       console.log("Connected to WebSocket server");
-      socket.send("Hello from client!");
+      socket.send("Hello from client");
     };
 
     socket.onmessage = (event) => {
@@ -79,21 +76,49 @@ const WebSocketComponent = () => {
     };
   }, []);
 
+  const getColor = (key,colors) => {
+    //const colors = ["primary", "secondary", "success", "error", "warning", "info"];
+    const index = Object.keys(typeCount).indexOf(key) % colors.length;
+    return colors[index];
+  };
+
+  const TypeColors = [
+    "#FF5733", // Red-Orange
+    "#33FF57", // Green
+    "#3357FF", // Blue
+    "#FF33A8", // Pink
+    "#A833FF", // Purple
+    "#33FFF5", // Cyan
+    "#FFD700", // Gold
+    "#FF8C00", // Dark Orange
+    "#8B0000", // Dark Red
+    "#228B22"  // Forest Green
+];
+const Badgecolors = ["primary", "secondary", "success", "error", "warning", "info"];
+
+const handleClick = (text) => {
+  console.log("clicked", text);
+  if(text==='All Types'){
+    setRow([...rowData])
+    return
+  }
+  const filteredData= rowData.filter(item => item.type === text);
+  setRow(filteredData);
+   
+}
   return (
     <div>
-      <div className="badgeDetails">
-        <Badge badgeContent={4} color="success">
-          <BadgeComp text={"Finance"} color={"black"} />
-        </Badge>
-        <Badge badgeContent={4} color="primary">
-          <BadgeComp text={"Adjustment"} color={"gray"} />
-        </Badge>
-        <Badge badgeContent={4} color="secondary">
-          <BadgeComp text={"Vacation"} color={"blue"} />
-        </Badge>
-      </div>
-
-      <h1>Email Classification</h1>
+       <h1>Email Classification</h1>
+  <div className="badgeDetails">
+      {Object.keys(typeCount).map((key, index) => (
+          <Badge badgeContent={typeCount[key]} color={getColor(key,Badgecolors)} key={index}>
+            <BadgeComp handleClick={handleClick} text={key} color={getColor(key,TypeColors)} />
+          </Badge>
+        ))}
+            <Badge badgeContent={Object.keys(typeCount).length+1} color={'primary'}>
+            <BadgeComp handleClick={handleClick} text={'All Types'} color={'#FF5733'} />
+          </Badge>
+        </div>
       <EnhancedTable
         keyData={key}
         data={data}

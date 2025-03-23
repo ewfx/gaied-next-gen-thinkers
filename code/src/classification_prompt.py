@@ -3,12 +3,10 @@ import io
 from langchain_google_genai import ChatGoogleGenerativeAI
 from langchain_core.prompts.pipeline import PipelinePromptTemplate
 from langchain_core.prompts.prompt import PromptTemplate
-from langchain.chains import LLMChain
 import json
 from utils.ai_utils import get_gemini_model
 from utils.json_utils import open_json_file
 from utils.json_utils import clean_ai_response
-from langchain_core.output_parsers import StrOutputParser
 
 os.environ["GOOGLE_API_KEY"] = "AIzaSyBgD85PrdkN2M8bFQA0HYOreAFkc_Z-TSA"
 
@@ -58,6 +56,7 @@ def classify_email(subject, body, attachment_text):
     classification_example = """
         **Output JSON Example**:
             classifications = {output_data}
+        Also, add one status field in the JSON object with value "new".
         Note: sub_request_type are bound to the request_type and can not be mixed.
     """
     classification_example_prompt = PromptTemplate.from_template(classification_example)

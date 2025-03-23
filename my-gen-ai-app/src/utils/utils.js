@@ -18,8 +18,13 @@ export function createData(obj) {
 
 
   export const getRequestTypesCount = (data) => {
-    return data.reduce((acc, obj) => {
+   const item= data.reduce((acc, obj) => {
       acc[obj.type] = (acc[obj.type] || 0) + 1;
       return acc;
   }, {});
+    return Object.entries(item).map(([type, value]) => ({
+        type: type,
+        value: value,
+        selected: false
+    }));
   }

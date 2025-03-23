@@ -65,13 +65,22 @@
   opacity: 0.8;
 } */
 
+.badges{
+  border-radius: 5px;
+  margin: 1em;
+  column-gap: 10px;
+  flex-wrap: wrap;
+  width: 641px;
+  row-gap: 19px;
+  display: flex;
+  justify-content: center;
+}
+
 .badgeDetails{
   display: flex;
   justify-content: center;
   align-items: center;
   padding: 1em;
   background-color: lightslategrey;
-  border-radius: 5px;
-  margin: 1em;
-  column-gap: 10px;
+ 
 }

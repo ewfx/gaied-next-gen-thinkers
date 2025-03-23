@@ -139,7 +139,7 @@ async def main_loop():
         mail = initialize_email_connection()
         while True:
             await process_email(mail)
-            await asyncio.sleep(os.getenv("EMAIL_CHECK_INTERVAL"))  # Wait before checking again
+            await asyncio.sleep(int(os.getenv("EMAIL_CHECK_INTERVAL")))  # Wait before checking again
     except Exception as e:
         print(f"An error occurred in the main loop: {e}")
     finally:

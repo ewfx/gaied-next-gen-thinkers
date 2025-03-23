@@ -5,7 +5,7 @@ import os
 from duplicate_email import TicketSystem
 from dotenv import load_dotenv
 from email_classification_gemini import update_request_for_duplicate
-from class_prompt_arun import classify_email
+from classification_prompt import classify_email
 from email_helper import *
 import json
 from database import *

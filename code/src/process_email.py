@@ -4,7 +4,7 @@ from email.policy import default
 import os
 from duplicate_email import TicketSystem
 from dotenv import load_dotenv
-from email_classification_gemini import update_request_for_duplicate
+from update_classification_prompt import update_request_for_duplicate
 from classification_prompt import classify_email
 from email_helper import *
 import json

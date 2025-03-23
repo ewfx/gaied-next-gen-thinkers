@@ -61,6 +61,7 @@ async def websocket_handler(websocket):
     """Handles WebSocket connections and messages."""
     connected_clients.add(websocket)
     print(f"Client connected: {websocket.remote_address}")
+    await send_storage_data(websocket)  # Send storage data to the new client
     try:
         async for message in websocket:
             if message == "get_storage_data":

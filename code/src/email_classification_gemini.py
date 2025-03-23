@@ -1,9 +1,15 @@
-from classification_prompt import classify_request_type, outputJsonFormat
 import google.generativeai as genai
+from utils.json_utils import open_json_file
 import json
 import os
 
-classification_data = classify_request_type()
+def getClassificationResultData():
+    return open_json_file('files/classification_result.json')
+
+def getClassificationData():
+    return open_json_file('files/classifications.json')
+
+classification_data = getClassificationData()
 def classify_email(subject, body, attachment_text):
     """Classifies email content using a generative AI model."""
 
@@ -22,7 +28,7 @@ def classify_email(subject, body, attachment_text):
     Attachments: {attachment_text}
 
     **Output JSON Format:**
-    {outputJsonFormat()}
+    {getClassificationResultData()}
     **Rules:**
     1. Provide confidence scores for  each classification
     2. Include reasoning for each classifications

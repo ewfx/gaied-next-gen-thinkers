@@ -1,99 +1,120 @@
+import os
+import io
+from langchain_google_genai import ChatGoogleGenerativeAI
+from langchain_core.prompts.pipeline import PipelinePromptTemplate
+from langchain_core.prompts.prompt import PromptTemplate
+from langchain.chains import LLMChain
 import json
+from utils.ai_utils import get_gemini_model
+from utils.json_utils import open_json_file
+from utils.json_utils import clean_ai_response
+from langchain_core.output_parsers import StrOutputParser
 
+os.environ["GOOGLE_API_KEY"] = "AIzaSyBgD85PrdkN2M8bFQA0HYOreAFkc_Z-TSA"
 
-def create_classification_hierarchy_from_json(json_data):
-    if not isinstance(json_data, dict):
-        print("Error: Input must be a dictionary.")
-        return []
+llm = ChatGoogleGenerativeAI(
+    model="gemini-2.0-flash",
+    temperature=0,
+    max_tokens=None,
+    timeout=None,
+    max_retries=2,
+)
 
-    classification = "Classification Hierarchy List: "
+def getClassificationData():
+    return open_json_file('files/classifications.json')
 
-    for type_name, subtypes in json_data.items():
-        if not isinstance(subtypes, list):
-            print(f"Error: Subtypes for Type '{type_name}' must be a list.")
-            return []
-        classification += f"\n• Request Type: {type_name}"
-        for subtype in subtypes:
-            classification += f"\n\t- Request Sub Type: {subtype}"
-            
-    return classification
+def getClassificationResultData():
+    return open_json_file('files/classification_result.json')
 
-def classify_request_type():
-    json_data = {
-        "Adjustment": [],
-        "AU Transfer": [],
-        "Closing Notice": ["Reallocation Fees", "Amendment Fees", "Reallocation Principal"],
-        "Commitment Change": ["Cashless Roll", "Decrease", "Increase"],
-        "Fee Payment": ["Ongoing Fee", "Letter of Credit Fee"],
-        "Money Movment-Inbound": ["Principal", "Interest", "Principal and Interest", "Principal and Interest and Fees"],
-        "Money Movment-Outbound": ["Timebound", "Foriegn Currency"]
-    }
+def getExtractionData():
+    return open_json_file('files/extraction_result.json')
 
-    return create_classification_hierarchy_from_json(json_data)
+def classify_email(subject, body, attachment_text):
+
+    classification_json = getClassificationData()
+    output_json_example = getClassificationResultData()
+    additional_information_json_format = getExtractionData()
+
+    print("*" * 50)
+
+    email_content = """
+        ** Email Content **
+            Subject: {subject}
+            Body: {body}
+            Attachments: {attachment_text}
+
+        **Conditions for analysis and summarization**
+            If it is mentioned specifically to use attachments then prioritize the attachments. 
+            Otherwise, prioritise email content if there is any contradictions between the email content and attachments for financial and banking information.
+        **
+
+        Summarize the email content based on Condition above for financial and banking analysis.
+    """
+    email_content_prompt = PromptTemplate.from_template(email_content)
+
+    classification_content = """
+        Analyze the content and provide JSON array listing all the classifications from {classification_data} in the format given below with the fitting confidence score.
+        Note: We want all of the classifications to be assessed and provided in the output.
+    """
+    classification_content_prompt = PromptTemplate.from_template(classification_content)
+
+    classification_example = """
+        **Output JSON Example**:
+            classifications = {output_data}
+        Note: sub_request_type are bound to the request_type and can not be mixed.
+    """
+    classification_example_prompt = PromptTemplate.from_template(classification_example)
+
+    additional_content = """
+        Also, provide all of the extra financial information from the email content provided above.
+    """
+    additional_content_prompt = PromptTemplate.from_template(additional_content)
+
+    additional_example = """
+        **Output JSON Format:**
+            additional_fields = {additional_information_data}
+        Note: We have to skip all the fields from this JSON that are not found in the email content.
+        
+        Final output should be in JSON format:
+        {{
+            'classifications': str,
+            'additional_fields': str
+        }}
+    """
+    additional_example_prompt = PromptTemplate.from_template(additional_example)
     
 
-    # Classification Hierarchy:
-    #     - Type: Adjustment
-    #     - Type: AU Transfer
-    #     - Type: Closing Notice
-    #         - Subtype: Reallocation Fees
-    #         - Subtype: Amendment Fees
-    #         - Subtype: Reallocation Principal
-    #     - Type: Commitment Change
-    #         - Subtype: Cashless Roll
-    #         - Subtype: Decrease
-    #         - Subtype: Increase
-    #     - Type: Fee Payment
-    #         - Subtype: Ongoing Fee
-    #         - Subtype: Letter of Credit Fee
-    #     - Type: Money Movment-Inbound
-    #         - Subtype: Principal
-    #         - Subtype: Interest
-    #         - Subtype: Principal and Interest
-    #         - Subtype: Principal and Interest and Fees
-    #     - Type: Money Movment-Outbound
-    #         - Subtype: Timebound
-    #         - Subtype: Foriegn Currency
+    prompt = """
+        {email_content}
+        {classification_content}
+        {classification_example}
+        {additional_content}
+        {additional_example}
+    """
+    full_prompt = PromptTemplate.from_template(prompt)
 
-def json_to_string(json_object):
-    try:
-        # Convert the JSON object to a JSON string
-        json_string = json.dumps(json_object)
-        return json_string
-    except (TypeError, ValueError) as e:
-        # Handle errors in case the JSON object is not valid
-        return f"Error converting to string: {e}"
+    input_prompts = [
+        ("email_content", email_content_prompt),
+        ("classification_content", classification_content_prompt),
+        ("classification_example", classification_example_prompt),
+        ("additional_content", additional_content_prompt),
+        ("additional_example", additional_example_prompt),
+    ]
 
-def outputJsonFormat() :
-    expected_fields = {
-        "request_types": [
-            {
-            "type": "[Classification Type]",
-            "subtype": "[Classification Subtype]",
-            "confidence_score": "[Confidence Score between 0.0-1.0]",
-            "reasoning": "[Explanation for classification]"
-            }
-        ],
-        "extracted_information": {
-            "date": "[Extracted Date in YYYY-MM-DD format or 'Not Found']",
-            "time": "[Extracted Time in HH:MM format or 'Not Found']",
-            "pnr": "[Extracted PNR number or 'Not Found']",
-            "departure": "[Extracted Departure location or 'Not Found']",
-            "arrival": "[Extracted Arrival location or 'Not Found']",
-            "amount": "[Extracted Amount or 'Not Found']",
-            "transaction_id": "[Extracted Transaction ID or 'Not Found']",
-            "loan_number": "[Extracted Loan Number or 'Not Found']",
-            "account_number": "[Extracted Account Number or 'Not Found']",
-            "expiration_date": "[Extracted Expiration Date in YYYY-MM-DD or 'Not Found']",
-            "deal_name": "[Extracted Deal Name or 'Not Found']",
-            "previous_allocation": "[Extracted Previous Allocation or 'Not Found']",
-            "new_allocation": "[Extracted New Allocation or 'Not Found']",
-            "principal_amount": "[Extracted Principal Amount or 'Not Found']",
-            "interest_amount": "[Extracted Interest Amount or 'Not Found']",
-            "fee_type": "[Extracted Fee Type or 'Not Found']",
-            "submission_document_type": "[Extracted Document Type or 'Not Found']",
-            "other_fields": "you can also add more fields which might be relevant to that specific request type"
-        }
-    }
+    pipeline = PipelinePromptTemplate(final_prompt = full_prompt, pipeline_prompts = input_prompts)
 
-    return json_to_string(expected_fields)
+    formattedPrompt = pipeline.format(
+        subject=subject,
+        body=body,
+        attachment_text=attachment_text,
+        classification_data=classification_json,
+        output_data=output_json_example,
+        additional_information_data=additional_information_json_format
+    )
+
+    response = llm.invoke(input=formattedPrompt)
+    clean_result = clean_ai_response(response.content)
+    print("Response - Classifications: ", clean_result)
+
+    print("*" * 50)
+    return clean_result

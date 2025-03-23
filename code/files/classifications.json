@@ -1,0 +1,30 @@
+[
+    {
+        "request_type": "Adjustment",
+        "sub_request_type": []
+    },
+    {
+        "request_type": "AU Transfer",
+        "sub_request_type": []
+    },
+    {
+        "request_type": "Closing Notice",
+        "sub_request_type": ["Reallocation Fees", "Amendment Fees", "Reallocation Principal"]
+    },
+    {
+        "request_type": "Commitment Change",
+        "sub_request_type": ["Cashless Roll", "Decrease", "Increase"]
+    },
+    {
+        "request_type": "Fee Payment",
+        "sub_request_type": ["Ongoing Fee", "Letter of Credit Fee"]
+    },
+    {
+        "request_type": "Money Movment-Inbound",
+        "sub_request_type": ["Principal", "Interest", "Principal and Interest", "Principal and Interest and Fees"]
+    },
+    {
+        "request_type": "Money Movment-Outbound",
+        "sub_request_type": ["Timebound", "Foriegn Currency"]
+    }    
+]

@@ -8,10 +8,69 @@ from email_classification_gemini import classify_email, update_request_for_dupli
 from email_helper import *
 import json
 from database import *
+import asyncio
+import websockets
 
 # Load environment variables from .env file
 load_dotenv()
 storage = SRMemoryStorage()
+WEBSOCKET_PORT = 8765
+connected_clients = set()
+EMAIL_CHECK_INTERVAL = 10  # Check for new emails every 60 seconds (adjust as needed)
+
+async def send_storage_data(websocket):
+    """Sends the current storage data to a specific WebSocket client."""
+    try:
+        data = json.dumps({"type": "storage_data", "payload": storage.get_all_requests()}, indent=4)
+        await websocket.send(data)
+        print(f"Storage data sent to client: {websocket.remote_address}")
+    except websockets.exceptions.ConnectionClosedError:
+        print(f"Connection closed for client: {websocket.remote_address}")
+        connected_clients.discard(websocket)
+    except Exception as e:
+        print(f"Error sending storage data: {e}")
+
+async def send_new_email_event():
+    """Sends an event to all connected clients when a new email is received."""
+    if connected_clients:
+        message = json.dumps({"type": "new_email_received"})
+        await asyncio.wait([client.send(message) for client in connected_clients])
+        print("New email event sent to all clients.")
+    else:
+        print("No connected clients to send new email event to.")
+
+async def send_classification_started_event(ticket_number):
+    """Sends an event to all connected clients when classification starts."""
+    if connected_clients:
+        message = json.dumps({"type": "classification_started", "ticket_number": ticket_number})
+        await asyncio.wait([client.send(message) for client in connected_clients])
+        print(f"Classification started event sent for ticket: {ticket_number}")
+    else:
+        print(f"No connected clients to send classification started event for ticket: {ticket_number}.")
+
+async def send_classification_data(ticket_number, classification_data):
+    """Sends the classification data to all connected clients."""
+    if connected_clients:
+        message = json.dumps({"type": "classification_data", "ticket_number": ticket_number, "payload": classification_data}, indent=4)
+        await asyncio.wait([client.send(message) for client in connected_clients])
+        print(f"Classification data sent for ticket: {ticket_number}")
+    else:
+        print(f"No connected clients to send classification data for ticket: {ticket_number}.")
+
+async def websocket_handler(websocket):
+    """Handles WebSocket connections and messages."""
+    connected_clients.add(websocket)
+    print(f"Client connected: {websocket.remote_address}")
+    try:
+        async for message in websocket:
+            if message == "get_storage_data":
+                await send_storage_data(websocket)
+    except websockets.exceptions.ConnectionClosedError:
+        print(f"Connection closed for client: {websocket.remote_address}")
+    except websockets.exceptions.ConnectionClosedOK:
+        print(f"Client disconnected gracefully: {websocket.remote_address}")
+    finally:
+        connected_clients.discard(websocket)
 
 def initialize_email_connection():
     """Initialize and return an IMAP email connection."""
@@ -36,11 +95,11 @@ def initialize_email_connection():
         print(f"General Error: {e}")
         raise
 
-def process_email(mail):
+async def process_email(mail):
     """Process emails from the connected email account."""
     ts = TicketSystem()
     print("Trying to fetch emails!")
-    
+
     try:
         # Fetch unread emails
         status, email_ids = mail.search(None, "UNSEEN")  # "UNSEEN"
@@ -48,6 +107,7 @@ def process_email(mail):
         # email_ids = sorted(email_ids[0].split(), key=int, reverse=True)[:1]
 
         for email_id in email_ids:
+            await send_new_email_event()
             status, data = mail.fetch(email_id, "(RFC822)")
             raw_email = data[0][1]
             msg = email.message_from_bytes(raw_email, policy=default)
@@ -78,6 +138,8 @@ def process_email(mail):
             # print("Subject: ", subject)
             # print("Body: ", body)
 
+            await send_classification_started_event(ticket_number)
+
             if not is_duplicate :  # new email for service request
                 # Classify email based on subject, body, and attachments
                 classification = classify_email(subject, body, attachment_text) # return json object
@@ -88,16 +150,18 @@ def process_email(mail):
                 if classification:
                     print(f"🔍 Email Classified as: {json.dumps(classification, indent=4)}")
                     storage.add_request(
-                    ticket_id=ticket_number,
-                    email_subject=subject,
-                    email_body=body,
-                    classification_info = classification)
+                        ticket_id=ticket_number,
+                        email_subject=subject,
+                        email_body=body,
+                        classification_info = classification)
+                    await send_classification_data(ticket_number, classification)
             else :
                 # processing previously process email
                 print(f"Email ID: {sender} => Ticket: {ticket_number} => Duplicate")
                 old_classification = storage.get_request(ticket_number)["classification_info"]
                 new_classification = update_request_for_duplicate(subject, body, attachment_text, old_classification)
                 storage.update_request(ticket_number, new_classification)
+                await send_classification_data(ticket_number, new_classification)
 
     except Exception as e:
         print(f"Error while processing emails: {e}")
@@ -111,15 +175,31 @@ def close_email_connection(mail):
     except Exception as e:
         print("Error logging out from email", e)
 
-def main():
-    """Main function to initialize and process emails."""
+async def main_loop():
+    """Main loop to continuously check for new emails."""
+    mail = None
     try:
         mail = initialize_email_connection()
-        process_email(mail)
+        while True:
+            await process_email(mail)
+            await asyncio.sleep(EMAIL_CHECK_INTERVAL)  # Wait before checking again
     except Exception as e:
-        print(f"An error occurred: {e}")
+        print(f"An error occurred in the main loop: {e}")
     finally:
-        close_email_connection(mail)
+        if mail:
+            close_email_connection(mail)
+
+async def main():
+    """Main function to run both the email processing and the WebSocket server."""
+    # Start the WebSocket server
+    websocket_server = await websockets.serve(websocket_handler, "localhost", WEBSOCKET_PORT)
+    print(f"WebSocket server started at ws://localhost:{WEBSOCKET_PORT}")
+
+    # Run the email processing loop
+    await main_loop()
+
+    # Keep the WebSocket server running until manually stopped
+    await websocket_server.wait_closed()
 
 if __name__ == "__main__":
-    main()
+    asyncio.run(main())

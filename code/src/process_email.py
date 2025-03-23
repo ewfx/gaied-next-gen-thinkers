@@ -65,7 +65,7 @@ def process_email(mail, read_last_email = False):
             raw_email = data[0][1]
             msg = email.message_from_bytes(raw_email, policy=default)
             # Process email with ticket system
-            ticket_number, is_duplicate = ts.process_server_email(raw_email)
+            ticket_number, is_duplicate = ts.process_server_email(raw_email) # is_duplicate true in case of reply and forward
             # Extract subject and body
             subject = msg["subject"] or ""
             sender = msg["from"]

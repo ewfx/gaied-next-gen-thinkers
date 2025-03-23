@@ -1,12 +1,13 @@
 from classification_prompt import classify_request_type, outputJsonFormat
 import google.generativeai as genai
 import json
+import os
 
 classification_data = classify_request_type()
 def classify_email(subject, body, attachment_text):
     """Classifies email content using a generative AI model."""
 
-    genai.configure(api_key="AIzaSyBgD85PrdkN2M8bFQA0HYOreAFkc_Z-TSA")  # Ensure API key is configured
+    genai.configure(api_key=os.getenv("GOOGLE_API_KEY"))  # Ensure API key is configured
     model = genai.GenerativeModel("gemini-2.0-flash")  # Choose the appropriate model
 
     combined_text = f"Subject: {subject}\nBody: {body}\nAttachments: {attachment_text}"

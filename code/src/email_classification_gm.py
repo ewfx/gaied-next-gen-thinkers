@@ -7,11 +7,13 @@ import os
 import pdfplumber
 import pytesseract
 from PIL import Image
+from utils.json_utils import open_json_file
 import docx
 import io
-from classification_prompt import classify_request_type
 
 
+def getClassificationData():
+    return open_json_file('files/classifications.json')
 
 def extract_plain_text(html_content):
     """Convert HTML email content to plain text."""
@@ -57,7 +59,7 @@ def process_attachment(part):
 
 from google import genai
 
-classification_data = classify_request_type()
+classification_data = getClassificationData()
 def classify_email(subject, body, attachment_text):
     client = genai.Client(api_key="AIzaSyBgD85PrdkN2M8bFQA0HYOreAFkc_Z-TSA")
     combined_text = f"Subject: {subject}\nBody: {body}\nAttachments: {attachment_text}"

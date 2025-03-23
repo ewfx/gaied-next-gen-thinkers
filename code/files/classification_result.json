@@ -1,0 +1,14 @@
+[
+  {
+    "request_type": "",
+    "confidence_score": 0.0,
+    "reasoning": "",
+    "sub_request_type": [
+        {
+            "sub_request_type": "",
+            "confidence_score": 0.0,
+            "sub_reasoning": ""
+        }
+    ]
+  }
+]

@@ -4,7 +4,8 @@ from email.policy import default
 import os
 from duplicate_email import TicketSystem
 from dotenv import load_dotenv
-from email_classification_gemini import classify_email, update_request_for_duplicate
+from email_classification_gemini import update_request_for_duplicate
+from classification_prompt import classify_email
 from email_helper import *
 import json
 from database import *
@@ -102,10 +103,22 @@ async def process_email(mail):
     print("Trying to fetch emails!")
 
     try:
-        # Fetch unread emails
-        status, email_ids = mail.search(None, "UNSEEN")  # "UNSEEN"
-        email_ids = sorted(email_ids[0].split(), key=int, reverse=False)
-        # email_ids = sorted(email_ids[0].split(), key=int, reverse=True)[:1]
+        # If read_last_email is True, only read the last email else read all emails
+        if (read_last_email == True):
+            toggle = "ALL"
+        else:
+            toggle = "UNSEEN"
+
+        # Fetch email
+        status, email_ids = mail.search(None, toggle)
+
+        # Use last email in case of read_last_email is True else use all emails
+        if (read_last_email == True):
+            sorted(email_ids[0].split(), key=int, reverse=True)[:1]
+        else:
+            email_ids = sorted(email_ids[0].split(), key=int, reverse=False)
+
+        print("Reading email with flag", read_last_email)
 
         for email_id in email_ids:
             await send_new_email_event()

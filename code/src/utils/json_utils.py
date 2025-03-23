@@ -1,3 +1,6 @@
+import json
+import os
+
 def json_to_string(json_object):
     """
     Convert a JSON object to a JSON string.
@@ -27,3 +30,30 @@ def clean_json(json):
         str: The cleaned JSON string with leading and trailing markers removed.
     """
     return json.text.strip().lstrip("```json").rstrip("```")
+
+def open_json_file(path):
+    """
+    Reads json from file and retuns.
+
+    Args:
+        path (str): File Path
+
+    Returns:
+        json: JSON object
+    """
+    path = os.path.join(os.path.dirname(os.path.abspath(__file__)), '..\\..', path)
+    with open(path, "r") as file:
+        data = json.load(file)
+    return data
+
+def clean_ai_response(response):
+    """
+    Cleans the AI response by removing unnecessary formatting.
+
+    Args:
+        response (str): The AI-generated response.
+
+    Returns:
+        str: The cleaned response with leading and trailing markers removed.
+    """
+    return response.strip().lstrip("```json").rstrip("```")

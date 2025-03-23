@@ -7,9 +7,10 @@ import os
 import pdfplumber
 import pytesseract
 from PIL import Image
-import json
+from utils.json_utils import open_json_file
 import docx
 import io
+import json
 from google import genai
 import asyncio
 import websockets
@@ -18,6 +19,9 @@ import websockets
 EMAIL = "nextgenthinkers2025@gmail.com"  # Replace with your email "jagadeesh.soppimat@gmail.com","nextgenthinkers2025@gmail.com"
 PASSWORD = "whvh mirp guwi yquu"  # Use App Password if needed "wiax ixav dqzz xzif", "whvh mirp guwi yquu"
 IMAP_SERVER = "imap.gmail.com"  # Change if using Outlook/Yahoo
+
+def getClassificationData():
+    return open_json_file('files/classifications.json')
 
 # Connect to IMAP server
 mail = imaplib.IMAP4_SSL(IMAP_SERVER)
@@ -66,6 +70,8 @@ def process_attachment(part):
     
     return text
 
+
+classification_data = getClassificationData()
 def classify_email(subject, body, attachment_text):
     client = genai.Client(api_key="AIzaSyBgD85PrdkN2M8bFQA0HYOreAFkc_Z-TSA")
     combined_text = f"Subject: {subject}\nBody: {body}\nAttachments: {attachment_text}"

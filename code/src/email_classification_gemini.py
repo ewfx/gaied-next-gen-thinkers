@@ -1,57 +1,11 @@
 import google.generativeai as genai
-from utils.json_utils import open_json_file
 import json
-import os
-
-def getClassificationResultData():
-    return open_json_file('files/classification_result.json')
-
-def getClassificationData():
-    return open_json_file('files/classifications.json')
-
-classification_data = getClassificationData()
-def classify_email(subject, body, attachment_text):
-    """Classifies email content using a generative AI model."""
-
-    genai.configure(api_key=os.getenv("GOOGLE_API_KEY"))  # Ensure API key is configured
-    model = genai.GenerativeModel("gemini-2.0-flash")  # Choose the appropriate model
-
-    combined_text = f"Subject: {subject}\nBody: {body}\nAttachments: {attachment_text}"
-    prompt = f"""Read the content below and classify the content based on the given classifications. 
-
-    {classification_data}
-    Also provide the confidence score for each classification.
-    
-    **Content to Analyze:**
-    Subject: {subject}
-    Body: {body}
-    Attachments: {attachment_text}
-
-    **Output JSON Format:**
-    {getClassificationResultData()}
-    **Rules:**
-    1. Provide confidence scores for  each classification
-    2. Include reasoning for each classifications
-    3. Use 'Not Found' for missing information
-    4. Maintain all fields from both original output formats
-    5. Follow strict JSON formatting
-
-    Return only the JSON response with your analysis."""
-    try:
-        response = model.generate_content(prompt)
-        cleaned_response = response.text.strip().lstrip("```json").rstrip("```")
-        # Now parse the cleaned string as JSON
-        json_response = json.loads(cleaned_response)
-        # print(json_response)
-        return json_response
-    except Exception as e:
-        print(f"Error classifying email: {e}")
-        return None  # Or handle the error as appropriate
 
 def update_request_for_duplicate(subject, body, attachment_text, previous_json_response):
     genai.configure(api_key="AIzaSyBgD85PrdkN2M8bFQA0HYOreAFkc_Z-TSA")  # Ensure API key is configured
     model = genai.GenerativeModel("gemini-2.0-flash")  # Choose the appropriate model
-    prompt_duplicate_check = f"""You have previously classified a service request email and its attachments, resulting in the following JSON output:
+    prompt_duplicate_check = f"""
+        You have previously classified a service request email and its attachments, resulting in the following JSON output:
 
         previous_json_response :
             {previous_json_response}
@@ -73,6 +27,7 @@ def update_request_for_duplicate(subject, body, attachment_text, previous_json_r
     try:
         response = model.generate_content(prompt_duplicate_check)
         cleaned_response = response.text.strip().lstrip("```json").rstrip("```")
+        print("Updated Response: ", cleaned_response)
         json_response = json.loads(cleaned_response)
         return json_response
     except Exception as e:

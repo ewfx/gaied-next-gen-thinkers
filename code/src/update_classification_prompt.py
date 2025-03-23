@@ -1,5 +1,7 @@
-import google.generativeai as genai
 import json
+from langchain_google_genai import ChatGoogleGenerativeAI
+from langchain_core.prompts.pipeline import PipelinePromptTemplate
+from langchain_core.prompts.prompt import PromptTemplate
 
 def update_request_for_duplicate(subject, body, attachment_text, previous_json_response):
     genai.configure(api_key="AIzaSyBgD85PrdkN2M8bFQA0HYOreAFkc_Z-TSA")  # Ensure API key is configured
@@ -33,3 +35,40 @@ def update_request_for_duplicate(subject, body, attachment_text, previous_json_r
     except Exception as e:
         print(f"Error classifying email: {e}")
         return None  # Or handle the error as appropriate
+
+
+def update_request_prompt(new_json_response, previous_json_response):
+    print("Prompt:", "function called")
+    llm = ChatGoogleGenerativeAI(
+        model="gemini-2.0-flash",
+        temperature=0,
+        max_tokens=None,
+        timeout=None,
+        max_retries=2,
+    )
+
+    email_content = PromptTemplate(
+        input_variables=["new_json_response", "previous_json_response"],
+        template = """
+            We have two JSON objects representing service requests. The **new_json** represents the original service request, while the **previous_json** represents the updated service request.
+            **new_json**:
+                {new_json_response}
+            **previous_json**:
+                {previous_json_response}
+            JSON objects are having two keys **classification**, **status**, **summary** and **additional_fields**.:
+            - **classification** contains the **request_type** and respective **sub_request_types**, both along with their **confidence_score**.
+            We use the combination of **request_type** and **sub_request_type** that have top **confidence_score** to create a service request.
+            If both JSON objects have different top **confidence_score** for **request_type** and **sub_request_type** 
+            OR if the additional fields are different, then we need to update the **status** key of **new_json** to **update**.
+            Else if both JSON objects have the same top **confidence_score** for **request_type** and **sub_request_type** and same additional fields, then we need to update the **status** key of **new_json** to **no_change**.
+
+            Also, update the **summary** key of **new_json** with the reasoning used in decision making.
+            Output the resultant **new_json** object after update.
+        """
+    )
+    prompt = email_content.format(new_json_response=new_json_response, previous_json_response=previous_json_response)
+
+    response = llm.invoke(input=prompt)
+    print("Updated Response: ", response.content)
+    clean_result = clean_ai_response(response.content)
+    return clean_result

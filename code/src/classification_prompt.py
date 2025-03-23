@@ -43,17 +43,14 @@ def classify_email(subject, body, attachment_text):
             Body: {body}
             Attachments: {attachment_text}
 
-        **Conditions for analysis and summarization**
-            If it is mentioned specifically to use attachments then prioritize the attachments. 
-            Otherwise, prioritise email content if there is any contradictions between the email content and attachments for financial and banking information.
-        **
-
-        Summarize the email content based on Condition above for financial and banking analysis.
+        Prioritise **Body** if there is any contradictions between the **Body** and **Attachments** for financial and banking information. 
+        But if it is specified or hinted in the **Body** that we have to use **Attachment** then use ignore **Body** content for analysis and summary and use **Attachment**.
+        Then Summarize the email content.
     """
     email_content_prompt = PromptTemplate.from_template(email_content)
 
     classification_content = """
-        Analyze the content and provide JSON array listing all the classifications from {classification_data} in the format given below with the fitting confidence score.
+        Consider the summary from previous step, Analyze the content and provide JSON array listing all the classifications from {classification_data} in the format given below with the fitting confidence score.
         Note: We want all of the classifications to be assessed and provided in the output.
     """
     classification_content_prompt = PromptTemplate.from_template(classification_content)
@@ -73,13 +70,7 @@ def classify_email(subject, body, attachment_text):
     additional_example = """
         **Output JSON Format:**
             additional_fields = {additional_information_data}
-        Note: We have to skip all the fields from this JSON that are not found in the email content.
-        
-        Final output should be in JSON format:
-        {{
-            'classifications': str,
-            'additional_fields': str
-        }}
+        Note: We have to skip all the fields from this JSON that are not found in the email content. We need the output in single JSON format.
     """
     additional_example_prompt = PromptTemplate.from_template(additional_example)
     

@@ -4,12 +4,14 @@ import EnhancedTable from "./table";
 import { useContext } from "react";
 import { MyContext } from "./app-route";
 import Button from "@mui/material/Button";
+import { convertLabelToTitleCase } from "./utils/utils";
 
 const ViewDetail = () => {
   const [row, setRow] = useState([]);
   const [headCells, setHeadCells] = useState([]);
   const [key, setKey] = useState([]);
   const [otherInfo, setOtherInfo] = useState({});
+  const [filteredItem, setFilteredItem] = useState({});
   const navigate = useNavigate();
 
   const { id } = useParams();
@@ -24,8 +26,8 @@ const ViewDetail = () => {
         (element) => element.id == id
       );
       console.log("Filtered Data:", filteredData);
-
-      const otherInfo = filteredData[0]?.extracted_information;
+      setFilteredItem(filteredData[0]);
+      const otherInfo = filteredData[0]?.additional_fields;
       Object.keys(otherInfo).forEach((key) => {
         console.log("Key:", key);
         if (otherInfo[key] === "Not Found") {
@@ -35,11 +37,10 @@ const ViewDetail = () => {
       setOtherInfo(otherInfo);
 
       if (filteredData && filteredData.length > 0) {
-        filteredData[0]?.request_types?.forEach((element, id) => {
-          console.log("Object with max confidence_score:", element);
-          rows.push({ ...element, id: element.id });
+        filteredData[0]?.classifications?.forEach((element, id) => {
+            rows.push({ ...element, id: Math.random().toString(36).substr(2, 9) });
         });
-        const keys = Object.keys(filteredData[0]?.request_types[0]);
+        const keys = Object.keys(filteredData[0]?.classifications[0]);
         setKey(keys);
         console.log("Keys:", keys);
         headCellsTemp = [];
@@ -48,7 +49,7 @@ const ViewDetail = () => {
             id: key,
             numeric: false,
             disablePadding: true,
-            label: key,
+            label: convertLabelToTitleCase(key),
           });
         });
         setRow(rows);
@@ -68,7 +69,7 @@ const ViewDetail = () => {
         rowGap: "30px",
       }}
     >
-      <h1>Confidance Score details</h1>
+      <h1>{filteredItem?.email_subject}</h1>
       <EnhancedTable
         source={"details"}
         keyData={key}
@@ -77,7 +78,7 @@ const ViewDetail = () => {
       />
       {otherInfo && Object.keys(otherInfo).length > 0 ? (
         <>
-         <h1>Attributes Details</h1>
+         <h1>Other Important Details</h1>
           <table style={{ width: "50vw",textAlign: "justify",alignSelf: "anchor-center" }}>
             <tbody>
               {Object.keys(otherInfo || {}).map((key) => (

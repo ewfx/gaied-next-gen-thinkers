@@ -1,9 +1,6 @@
 import React, { useEffect, useState } from "react";
 import EnhancedTable from "./table";
-import {
-  getMaxConfidaentObject,
-  getRequestTypesCount,
-} from "./utils/utils";
+import { convertLabelToTitleCase, getMaxConfidaentObject, getRequestTypesCount } from "./utils/utils";
 import { useContext } from "react";
 import { MyContext } from "./app-route";
 import BadgeComp from "./BadgeComp";
@@ -22,11 +19,8 @@ const WebSocketComponent = () => {
   const { setContextData } = useContext(MyContext);
   const [showGraph, setShowGraph] = useState(false);
 
-  useEffect(() => {
-    fetch("http://localhost:3000/data")
-      .then((response) => response.json())
-      .then((serverData) => {
-        console.log("Data from server:", serverData);
+const formatData=(serverData)=>{
+  console.log("Data from server:", serverData);
         setContextData(serverData);
         const rows = [];
         let headCellsTemp = [];
@@ -43,7 +37,7 @@ const WebSocketComponent = () => {
               id: key,
               numeric: false,
               disablePadding: true,
-              label: key,
+              label: convertLabelToTitleCase(key),
             });
           });
         });
@@ -54,12 +48,18 @@ const WebSocketComponent = () => {
         setHeadCells((prevHeadCells) => [
           ...headCellsTemp,
           {
-            id: "action",
+            id: "Action",
             numeric: false,
             disablePadding: true,
             label: "Action",
           },
         ]);
+}
+
+  useEffect(() => {
+    fetch("http://localhost:3000/data")
+      .then((response) => response.json())
+      .then((serverData) => {
       })
       .catch((error) => console.error("Error fetching data:", error));
 
@@ -71,8 +71,13 @@ const WebSocketComponent = () => {
     };
 
     socket.onmessage = (event) => {
-      console.log("Received from server:", event.data);
-      setData((prevData) => [JSON.parse(event.data), ...prevData]);
+      console.log("Received from server:", JSON.parse(event.data));
+      let serverData = JSON.parse(event.data);
+      if(serverData?.type === "storage_data"){
+       // setData([...serverData.payload]);
+       formatData(serverData.payload);
+      }
+      
     };
 
     return () => {
@@ -81,7 +86,8 @@ const WebSocketComponent = () => {
   }, []);
 
   const getColor = (key, colors) => {
-    const index = typeCount.findIndex((item) => item.type === key) % colors.length;
+    const index =
+      typeCount.findIndex((item) => item.type === key) % colors.length;
     return colors[index];
   };
 
@@ -107,68 +113,75 @@ const WebSocketComponent = () => {
   ];
 
   const handleClick = (text) => {
+    console.log("clicked", text);
     const updatedTypeCount = typeCount.map((item) =>
-      item.type === text ? { ...item, selected: true } : { ...item, selected: false }
+      item.type === text
+        ? { ...item, selected: true }
+        : { ...item, selected: false }
     );
     setTypeCount(updatedTypeCount);
     setAllTypeSelected(false);
-    console.log("clicked", text);
     if (text === "All Types") {
       setAllTypeSelected(true);
       setRow([...rowData]);
       return;
     }
-    const filteredData = rowData.filter((item) => item.type === text);
+    const filteredData = rowData.filter((item) => item.request_type === text);
     setRow(filteredData);
   };
 
   const handleLableChange = (value) => {
     console.log("handleLableChange", value);
-    const updatedTypeCount = typeCount.map((item) =>
-     ( { ...item, selected: false })
-    );
+    const updatedTypeCount = typeCount.map((item) => ({
+      ...item,
+      selected: false,
+    }));
     setAllTypeSelected(true);
     setTypeCount(updatedTypeCount);
     setShowGraph(value);
     setRow([...rowData]);
-
-  }
+  };
   return (
     <div>
-      <h1>Email Classification</h1>
-      <ControlledSwitches setShowGraph={setShowGraph}  handleLableChange={handleLableChange} />
+      <h1>Request Types</h1>
+      <ControlledSwitches
+        setShowGraph={setShowGraph}
+        handleLableChange={handleLableChange}
+      />
       <div className="badgeDetails">
-
-        {!showGraph &&<div className="badges">
-          {typeCount.map((item, index) => (
+        {!showGraph && (
+          <div className="badges">
+            {typeCount.map((item, index) => (
+              <Badge
+                badgeContent={item.value}
+                color={getColor(item.type, Badgecolors)}
+                key={index}
+              >
+                <BadgeComp
+                  handleClick={handleClick}
+                  text={item.type}
+                  color={item.selected ? "#4CAF50" : "white"}
+                  selected={item.selected}
+                />
+              </Badge>
+            ))}
             <Badge
-              badgeContent={item.value}
-              color={getColor(item.type, Badgecolors)}
-              key={index}
+              badgeContent={Object.keys(typeCount).length + 1}
+              color={"primary"}
             >
               <BadgeComp
                 handleClick={handleClick}
-                text={item.type}
-                color={item.selected?'#4CAF50':'white'}
-                selected={item.selected}
+                text={"All Types"}
+                color={allTypeSelected ? "#4CAF50" : "white"}
+                selected={allTypeSelected}
               />
             </Badge>
-          ))}
-          <Badge
-            badgeContent={Object.keys(typeCount).length + 1}
-            color={"primary"}
-          >
-            <BadgeComp
-              handleClick={handleClick}
-              text={"All Types"}
-              color={allTypeSelected?'#4CAF50':'white'}
-              selected={allTypeSelected}
-            />
-          </Badge>
-          <div />        
-        </div>}
-        {showGraph && <BasicPie typeCount={typeCount} handleClick={handleClick}/>}
-        
+            <div />
+          </div>
+        )}
+        {showGraph && (
+          <BasicPie typeCount={typeCount} handleClick={handleClick} />
+        )}
       </div>
 
       <EnhancedTable

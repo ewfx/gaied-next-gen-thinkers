@@ -4,7 +4,7 @@ const BadgeComp = ({ text, color,handleClick,selected }) => {
     const badgeStyle = {
         backgroundColor: color,
         padding: '10px',
-        borderRadius: '100%',
+         borderRadius: '20px',
         color: !selected?'black':'white',
         display: 'inline-block',
         cursor: 'pointer',

@@ -13,17 +13,13 @@ import TableSortLabel from "@mui/material/TableSortLabel";
 import Toolbar from "@mui/material/Toolbar";
 import Typography from "@mui/material/Typography";
 import Paper from "@mui/material/Paper";
-import Checkbox from "@mui/material/Checkbox";
-import IconButton from "@mui/material/IconButton";
-import Tooltip from "@mui/material/Tooltip";
-import FormControlLabel from "@mui/material/FormControlLabel";
-import Switch from "@mui/material/Switch";
-import DeleteIcon from "@mui/icons-material/Delete";
-import FilterListIcon from "@mui/icons-material/FilterList";
 import Button from "@mui/material/Button";
 import { visuallyHidden } from "@mui/utils";
 import { useNavigate } from "react-router-dom";
 import TextField from "@mui/material/TextField";
+import SvgMore from "@material-ui/icons/ExpandMore";
+import ExpandMoreIcon from "@mui/icons-material/ExpandMore";
+import { convertLabelToTitleCase } from "./utils/utils";
 
 function createData(id, subject, classification, confidance, reasoning) {
   return {
@@ -102,22 +98,9 @@ function EnhancedTableHead(props) {
   return (
     <TableHead>
       <TableRow>
-        {/* <TableCell padding="checkbox">
-          <Checkbox
-            color="primary"
-            indeterminate={numSelected > 0 && numSelected < rowCount}
-            checked={rowCount > 0 && numSelected === rowCount}
-            onChange={onSelectAllClick}
-            inputProps={{
-              'aria-label': 'select all desserts',
-            }}
-          />
-        </TableCell> */}
         {headCellsData.map((headCell) => (
           <TableCell
             key={headCell.id}
-            // align={headCell.numeric ? 'right' : 'left'}
-            // padding={headCell.disablePadding ? 'none' : 'normal'}
             sortDirection={orderBy === headCell.id ? order : false}
           >
             <TableSortLabel
@@ -177,15 +160,20 @@ function EnhancedTableToolbar(props) {
         </Typography>
       ) : (
         <>
-          <TextField id="standard-basic" label="Serach" variant="standard" onChange={props.handleSearch}/>
-          {/* <Typography
+          <TextField
+            id="standard-basic"
+            label="Serach"
+            variant="standard"
+            onChange={props.handleSearch}
+          />
+          <Typography
             sx={{ flex: "1 1 100%" }}
             variant="h6"
             id="tableTitle"
             component="div"
           >
-            Classification
-          </Typography> */}
+            Confidence Score Details
+          </Typography>
         </>
       )}
     </Toolbar>
@@ -210,11 +198,11 @@ export default function EnhancedTable({
   const [dense, setDense] = React.useState(false);
   const [rowData, setRowData] = React.useState([]);
   const [rowsPerPage, setRowsPerPage] = React.useState(5);
+  const [expanded, setExpanded] = React.useState({ id: null, selected: false });
 
   React.useEffect(() => {
     setRowData(rowTableData);
-  }, [rowTableData])
-  
+  }, [rowTableData]);
 
   const handleRequestSort = (event, property) => {
     const isAsc = orderBy === property && order === "asc";
@@ -280,20 +268,38 @@ export default function EnhancedTable({
     [order, orderBy, page, rowsPerPage, rowData]
   );
 
-  const handleSearch=(event)=>{
-    console.log("searching",event.target.value);
-    const data=rowTableData.filter(obj => 
-      Object.values(obj).some(value => 
-          typeof value === 'string' && value.toLowerCase().includes(event.target.value.toLowerCase())
+  const handleSearch = (event) => {
+    console.log("searching", event.target.value);
+    const data = rowTableData.filter((obj) =>
+      Object.values(obj).some(
+        (value) =>
+          typeof value === "string" &&
+          value.toLowerCase().includes(event.target.value.toLowerCase())
       )
-  )
-  setRowData(data)
-  }
+    );
+    setRowData(data);
+  };
+
+  const handleExpand = (id) => {
+    if (expanded.id === id) {
+      setExpanded((prev) => ({
+        id: id,
+        selected: prev.selected ? false : true,
+      }));
+      return;
+    } else {
+      setExpanded((prev) => ({ id: id, selected: true }));
+    }
+    return;
+  };
 
   return (
     <Box sx={{ width: "100%" }}>
       <Paper sx={{ width: "100%", mb: 2 }}>
-        <EnhancedTableToolbar numSelected={selected.length} handleSearch={handleSearch} />
+        <EnhancedTableToolbar
+          numSelected={selected.length}
+          handleSearch={handleSearch}
+        />
         <TableContainer>
           <Table
             sx={{ minWidth: 750 }}
@@ -315,6 +321,7 @@ export default function EnhancedTable({
                 const labelId = `enhanced-table-checkbox-${index}`;
 
                 return (
+                  <>
                   <TableRow
                     hover
                     onClick={(event) => handleClick(event, row.id)}
@@ -323,25 +330,64 @@ export default function EnhancedTable({
                     tabIndex={-1}
                     key={row.id}
                     selected={isItemSelected}
-                    sx={{ cursor: "pointer" }}
+                    sx={{ cursor: "pointer", backgroundColor: isItemSelected ? alpha("#3f51b5", 0.1) : "inherit" }}
                   >
                     {keyData?.map((data, index) => (
-                      <>
-                        <TableCell align="left">{row[data]}</TableCell>
-                      </>
+                    <>
+                      {data !== "sub_request_type" ? (
+                      <TableCell align="left">{row[data]}</TableCell>
+                      ) : (
+                      <TableCell>
+                        {row?.sub_request_type?.length > 0 ? (
+                        <ExpandMoreIcon
+                          onClick={() => handleExpand(row.id)}
+                        >
+                          <SvgMore />
+                        </ExpandMoreIcon>
+                        ) : (
+                        "NA"
+                        )}
+                      </TableCell>
+                      )}
+                    </>
                     ))}
 
                     {source !== "details" && (
-                      <TableCell align="left">
-                        <Button
-                          variant="contained"
-                          onClick={() => viewDetails(row)}
-                        >
-                          View Detail
-                        </Button>
-                      </TableCell>
+                    <TableCell align="left">
+                      <Button
+                      variant="contained"
+                      onClick={() => viewDetails(row)}
+                      >
+                      View Detail
+                      </Button>
+                    </TableCell>
                     )}
                   </TableRow>
+                  {row.id == expanded.id && expanded.selected && (
+                    <TableRow>
+                    <TableCell colSpan="2">
+                      <Table>
+                      <TableHead>
+                        <TableRow>
+                        <TableCell>{convertLabelToTitleCase('sub_request_type')}</TableCell>
+                        <TableCell>{convertLabelToTitleCase('confidence_score')}</TableCell>
+                        <TableCell>{convertLabelToTitleCase('sub_reasoning')}</TableCell>
+                        </TableRow>
+                      </TableHead>
+                      <TableBody>
+                        {row.sub_request_type.map((sub) => (
+                        <TableRow key={sub.sub_request_type}>
+                          <TableCell>{sub.sub_request_type}</TableCell>
+                          <TableCell>{sub.confidence_score}</TableCell>
+                          <TableCell>{sub.sub_reasoning}</TableCell>
+                        </TableRow>
+                        ))}
+                      </TableBody>
+                      </Table>
+                    </TableCell>
+                    </TableRow>
+                  )}
+                  </>
                 );
               })}
               {emptyRows > 0 && (

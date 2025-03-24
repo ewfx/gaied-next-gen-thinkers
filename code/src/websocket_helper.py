@@ -13,7 +13,7 @@ connected_clients = set()
 async def send_storage_data(websocket):
     """Sends the current storage data to a specific WebSocket client."""
     try:
-        data = json.dumps({"type": "storage_data", "payload": storage.get_all_requests()}, indent=4)
+        data = json.dumps({"type": "storage_data", "payload": storage.get_all_ticket_data()}, indent=4)
         await websocket.send(data)
         print(f"Storage data sent to client: {websocket.remote_address}")
     except websockets.exceptions.ConnectionClosedError:

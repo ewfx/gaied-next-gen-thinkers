@@ -1,5 +1,6 @@
 import json
 import os
+import ast
 
 def json_to_string(json_object):
     """
@@ -56,4 +57,4 @@ def clean_ai_response(response):
     Returns:
         str: The cleaned response with leading and trailing markers removed.
     """
-    return response.strip().lstrip("```json").rstrip("```")
+    return ast.literal_eval(response.strip().lstrip("```json").rstrip("```"))

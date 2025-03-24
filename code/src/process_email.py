@@ -110,6 +110,7 @@ async def process_email(mail, read_last_email = False):
                         ticket_id=ticket_number,
                         email_subject=subject,
                         email_body=body,
+                        sender=sender,
                         classification_info = classification)
                     await send_classification_data(ticket_number, classification)
             else :
@@ -117,7 +118,8 @@ async def process_email(mail, read_last_email = False):
                 print(f"Email ID: {sender} => Ticket: {ticket_number} => Duplicate")
                 old_classification = storage.get_request(ticket_number)["classification_info"]
                 new_classification = update_request_for_duplicate(subject, body, attachment_text, old_classification)
-                storage.update_request(ticket_number, new_classification)
+                # storage.update_request(ticket_number, new_classification)
+                storage.update_request_with_thread(ticket_number, new_classification, subject, email)
                 await send_classification_data(ticket_number, new_classification)
 
     except Exception as e:

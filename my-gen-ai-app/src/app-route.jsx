@@ -4,6 +4,7 @@ import WebSocketComponent from "./connect";
 import './App.css'
 import ViewDetail from "./ViewDetail"; // Ensure this component is imported
 import Banner from "./Banner"; // Ensure this component is imported
+import Dashboard from "./Dashboard";
 
 export const MyContext = React.createContext();
 
@@ -24,7 +25,8 @@ const AppRoute = () => {
       <Router>
         <Routes>
           <Route path="/details/:id" element={<ViewDetail />} />
-          <Route exact path="/" element={<WebSocketComponent />} />
+          <Route path="/email-classifications" element={<WebSocketComponent />} />
+          <Route exact path="/" element={<Dashboard />} />
         </Routes>
       </Router>
     </MyProvider>

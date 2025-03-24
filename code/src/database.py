@@ -129,21 +129,18 @@ class SRMemoryStorage:
         return result
 
     # Add this new method for complete data export
-    def export_all_data(self) -> List[dict]:
+    def get_ticket_data(self, ticket_id) -> List[dict]:
         """Get complete ticket data including thread history"""
-        return [
-            {
+        ticket = self.requests[ticket_id]
+        return {
                 "id": ticket_id,
                 "email_subject": ticket["email_subject"],
                 "email_body":ticket["email_body"],
                 "sender":ticket["sender"],
-                "is_duplicate": false,
+                "is_duplicate": False,
                 "classifications": ticket['classification_info']['classifications'],
                 "thread": ticket['thread'],
                 "additional_fields": ticket['classification_info']["additional_fields"],
                 "classification_history": ticket['classification_history'],
                 "status": ticket['status']
             }
-            for ticket_id, ticket in self.requests.items()
-        ]
-        

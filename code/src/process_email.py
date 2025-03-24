@@ -112,7 +112,7 @@ async def process_email(mail, read_last_email = False):
                         email_body=body,
                         sender=sender,
                         classification_info = classification)
-                    await send_classification_data(ticket_number, classification)
+                    await send_classification_data(ticket_number)
             else :
                 # processing previously process email
                 print(f"Email ID: {sender} => Ticket: {ticket_number} => Duplicate")
@@ -120,7 +120,7 @@ async def process_email(mail, read_last_email = False):
                 new_classification = update_request_for_duplicate(subject, body, attachment_text, old_classification)
                 # storage.update_request(ticket_number, new_classification)
                 storage.update_request_with_thread(ticket_number, new_classification, subject, email)
-                await send_classification_data(ticket_number, new_classification)
+                await send_classification_data(ticket_number)
 
     except Exception as e:
         print(f"Error while processing emails: {e}")

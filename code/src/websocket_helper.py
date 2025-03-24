@@ -40,10 +40,10 @@ async def send_classification_started_event(ticket_number):
     else:
         print(f"No connected clients to send classification started event for ticket: {ticket_number}.")
 
-async def send_classification_data(ticket_number, classification_data):
+async def send_classification_data(ticket_number):
     """Sends the classification data to all connected clients."""
     if connected_clients:
-        message = json.dumps({"type": "classification_data", "ticket_number": ticket_number, "payload": classification_data}, indent=4)
+        message = json.dumps({"type": "classification_data", "ticket_number": ticket_number, "payload": storage.get_ticket_data(ticket_number)}, indent=4)
         await asyncio.wait([client.send(message) for client in connected_clients])
         print(f"Classification data sent for ticket: {ticket_number}")
     else:

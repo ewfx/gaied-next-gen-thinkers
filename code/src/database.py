@@ -1,5 +1,7 @@
 from datetime import datetime
 from typing import Dict, List
+import uuid
+import json
 
 class SRMemoryStorage:
     _instance = None  # Singleton pattern
@@ -12,6 +14,7 @@ class SRMemoryStorage:
     
     def _initialize(self):
         self.requests = {}
+        self.email_map = {}
         self.metadata = {
             "total_requests": 0,
             "last_updated": None,
@@ -19,11 +22,23 @@ class SRMemoryStorage:
         }
         
 
-    def add_request(self, ticket_id, sender,email_subject, email_body, classification_info):
+    def add_request(self, ticket_id, sender, email_subject, email_body, classification_info, status, is_duplicate=False):
         """Store a new service request in memory"""
-        if ticket_id in self.requests:
-            raise ValueError(f"Ticket ID {ticket_id} already exists")
-            
+        # if ticket_id in self.requests:
+        #     raise ValueError(f"Ticket ID {ticket_id} already exists")
+        uuid1 = str(uuid.uuid1())
+        self.email_map[uuid1] = {
+            "ticket_id": ticket_id,
+            "email_subject": email_subject,
+            "email_body": email_body,
+            "sender": sender,
+            "classification_info": classification_info,
+            "is_duplicate": is_duplicate,
+            "timestamp": datetime.now().isoformat(),
+            "status": status,
+            "thread": [],
+            "classification_history":[]
+        }
         self.requests[ticket_id] = {
             "ticket_id": ticket_id,
             "email_subject": email_subject,
@@ -38,7 +53,7 @@ class SRMemoryStorage:
         
         self.metadata["total_requests"] += 1
         self.metadata["last_updated"] = datetime.now().isoformat()
-        return True
+        return uuid1
 
     def get_request(self, ticket_id):
         """Get request by ticket ID"""
@@ -79,16 +94,29 @@ class SRMemoryStorage:
         self._update_metadata()
         return True
     
-    def update_request_with_thread(self, ticket_id, classification_info, email_subject: str, 
-                 email_body: str):
+    def update_request_with_thread(self, ticket_id, classification_info, email_subject, 
+                 email_body, sender):
         """Update request status"""
-        if ticket_id in self.requests:
-            _add_thread_message(ticket_id,email_subject, email_body)
-            self.requests[ticket_id]["status"] = "updated"
-            self.requests[ticket_id]["classification_info"] = classification_info 
-            self.metadata["last_updated"] = datetime.now().isoformat()
-            return True
-        return False
+        uuid1 = str(uuid.uuid1())
+        self.email_map[uuid1] = {
+            "ticket_id": ticket_id,
+            "email_subject": email_subject,
+            "email_body": email_body,
+            "sender": sender,
+            "classification_info": classification_info,
+            "timestamp": datetime.now().isoformat(),
+            "status": "updated",
+            "thread": [],
+            "classification_history":[]
+        }
+        print(json.dumps(self.email_map))
+        # if ticket_id in self.requests:
+        #     self._add_thread_message(ticket_id,email_subject, email_body)
+        #     self.requests[ticket_id]["status"] = "updated"
+        #     self.requests[ticket_id]["classification_info"] = classification_info 
+        #     self.metadata["last_updated"] = datetime.now().isoformat()
+        #     return uuid1
+        return uuid1
 
     @property
     def total_requests(self):
@@ -110,20 +138,21 @@ class SRMemoryStorage:
     def get_all_ticket_data(self) -> List[dict]:
         """Return all tickets in standardized format"""
         result = []
-        for ticket_id, ticket in self.requests.items():
-        
+        for ticket_id, ticket in self.email_map.items():
+           
             ticket_data = {
                 "id": ticket_id,
-                "email_subject": ticket["email_subject"],
-                "email_body":ticket["email_body"],
-                "sender":ticket["sender"],
-                "is_duplicate": False,
-                "classifications": ticket['classification_info']['classifications'],
-                "thread": ticket['thread'],
-                "summary": ticket['classification_info']["summary"],
-                "additional_fields": ticket['classification_info']["additional_fields"],
-                "classification_history": ticket['classification_history'],
-                "status": ticket['status']
+               "ticket_id": ticket.get("ticket_id",""),
+                "email_subject": ticket.get("email_subject", ""),
+                "email_body": ticket.get("email_body", ""),
+                "sender": ticket.get("sender", ""),
+                "is_duplicate": ticket.get("is_duplicate", False),  # Assuming default is False if not present
+                "classifications": ticket.get("classification_info", {"classifications":{}}).get("classifications",),
+                # "thread": thread_data,
+                "summary": ticket.get("classification_info", {"summary":""}).get("summary", ""),
+                "additional_fields": ticket.get("classification_info", {"additional_fields":{}}).get("additional_fields", {}),
+                "classification_history": ticket.get("classification_history",[]),
+                "status": ticket.get("status", "new")
             }
             result.append(ticket_data)
         return result
@@ -131,16 +160,19 @@ class SRMemoryStorage:
     # Add this new method for complete data export
     def get_ticket_data(self, ticket_id) -> List[dict]:
         """Get complete ticket data including thread history"""
-        ticket = self.requests[ticket_id]
+        ticket = self.email_map[ticket_id]
+       
         return {
                 "id": ticket_id,
-                "email_subject": ticket["email_subject"],
-                "email_body":ticket["email_body"],
-                "sender":ticket["sender"],
-                "is_duplicate": False,
-                "classifications": ticket['classification_info']['classifications'],
-                "thread": ticket['thread'],
-                "additional_fields": ticket['classification_info']["additional_fields"],
-                "classification_history": ticket['classification_history'],
-                "status": ticket['status']
+               "ticket_id": ticket.get("ticket_id",""),
+                "email_subject": ticket.get("email_subject", ""),
+                "email_body": ticket.get("email_body", ""),
+                "sender": ticket.get("sender", ""),
+                "is_duplicate": ticket.get("is_duplicate", False),  # Assuming default is False if not present
+                "classifications": ticket.get("classification_info", {"classifications":{}}).get("classifications",),
+                # "thread": thread_data,
+                "summary": ticket.get("classification_info", {"summary":""}).get("summary", ""),
+                "additional_fields": ticket.get("classification_info", {"additional_fields":{}}).get("additional_fields", {}),
+                "classification_history": ticket.get("classification_history",[]),
+                "status": ticket.get("status", "new")
             }

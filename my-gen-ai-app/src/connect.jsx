@@ -7,9 +7,10 @@ import BadgeComp from "./BadgeComp";
 import Badge from "@mui/material/Badge";
 import BasicPie from "./PieChart";
 import ControlledSwitches from "./swich";
-
+let pData = [];
 const WebSocketComponent = () => {
   const [data, setData] = useState([{}]);
+  const [payloadData, setPayloadData] = useState([]);
   const [row, setRow] = useState([{}]);
   const [rowData, setRowData] = useState([{}]);
   const [headCells, setHeadCells] = useState([{}]);

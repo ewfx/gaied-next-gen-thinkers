@@ -16,7 +16,7 @@ const WebSocketComponent = () => {
   const [typeCount, setTypeCount] = useState([{}]);
   const [key, setKey] = useState([]);
   const [allTypeSelected, setAllTypeSelected] = useState(true);
-  const { setContextData } = useContext(MyContext);
+  const { contextData, setContextData } = useContext(MyContext);
   const [showGraph, setShowGraph] = useState(false);
 
 const formatData=(serverData)=>{
@@ -58,32 +58,7 @@ const formatData=(serverData)=>{
 }
 
   useEffect(() => {
-    // fetch("http://localhost:3000/data")
-    //   .then((response) => response.json())
-    //   .then((serverData) => {
-    //   })
-    //   .catch((error) => console.error("Error fetching data:", error));
-
-    const socket = new WebSocket("ws://localhost:8765");
-
-    socket.onopen = () => {
-      console.log("Connected to WebSocket server");
-      socket.send("Hello from client");
-    };
-
-    socket.onmessage = (event) => {
-      console.log("Received from server:", JSON.parse(event.data));
-      let serverData = JSON.parse(event.data);
-      if(serverData?.type === "storage_data"){
-       // setData([...serverData.payload]);
-       formatData(serverData.payload);
-      }
-      
-    };
-
-    return () => {
-      socket.close();
-    };
+    formatData(contextData?.payload);
   }, []);
 
   const getColor = (key, colors) => {

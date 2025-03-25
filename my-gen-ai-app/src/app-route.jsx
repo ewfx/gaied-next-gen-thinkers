@@ -5,6 +5,7 @@ import './App.css'
 import ViewDetail from "./ViewDetail"; // Ensure this component is imported
 import Banner from "./Banner"; // Ensure this component is imported
 import Dashboard from "./Dashboard";
+import ServiceRequest from "./ServiceRequest";
 
 export const MyContext = React.createContext();
 
@@ -28,6 +29,7 @@ const AppRoute = () => {
           <Route exact path="/" element={<Dashboard />} /> */}
           <Route path="/" element={<Navigate to="/dashboard" replace />} />
           <Route path="/dashboard" element={<Dashboard />}>
+            <Route path="create-service-request-demo" element={<ServiceRequest />}></Route>
             <Route path="configuration" element={<div style={{'position': 'absolute', 'top': '50%', 'left': '50%'}}>Feature enhancement will be added here.</div>}></Route>
             <Route path="email-classifications" element={<WebSocketComponent />} />
             <Route path="email-classifications/details/:id" element={<ViewDetail />} />

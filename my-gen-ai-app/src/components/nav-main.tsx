@@ -35,6 +35,7 @@ export function NavMain({
 }) {
   return (
     <SidebarGroup>
+      <Link to='create-service-request-demo'><SidebarGroupLabel>Create Service Request for Demo</SidebarGroupLabel></Link>
       <Link to='/'><SidebarGroupLabel>Dashboard</SidebarGroupLabel></Link>
       <Link to='configuration'><SidebarGroupLabel>Configuration</SidebarGroupLabel></Link>
       <Link to='email-classifications'><SidebarGroupLabel>Request Types</SidebarGroupLabel></Link>

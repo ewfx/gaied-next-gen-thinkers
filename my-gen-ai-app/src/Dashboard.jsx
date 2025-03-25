@@ -33,7 +33,7 @@ export default function Dashboard() {
   
   const location = useLocation(); // Get the current location object;
   const locationPathname = location.pathname; // Get the current location pathname;
-  const isEmailClassification = locationPathname.includes("email-classifications") || locationPathname.includes("configuration");
+  const isEmailClassification = locationPathname.includes("email-classifications") || locationPathname.includes("configuration") || locationPathname.includes("create-service-request-demo");
   console.log("Is Email Classification:", isEmailClassification);  
   const getTotalCount = (data) => {
     return data && Object.keys(data).length + Object.values(data).reduce((acc, arr) => acc + arr.length, 0);

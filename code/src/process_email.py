@@ -4,7 +4,7 @@ from email.policy import default
 import os
 from duplicate_email import TicketSystem
 from dotenv import load_dotenv
-from update_classification_prompt import update_request_for_duplicate
+from update_classification_prompt import update_request_for_duplicate, update_request_prompt
 from classification_prompt import classify_email
 from email_helper import *
 import json
@@ -106,21 +106,34 @@ async def process_email(mail, read_last_email = False):
                 # print(f"📜 attachment_text:\n{attachment_text}")
                 if classification:
                     print(f"🔍 Email Classified as: {json.dumps(classification, indent=4)}")
-                    storage.add_request(
+                    uuidd =storage.add_request(
                         ticket_id=ticket_number,
                         email_subject=subject,
                         email_body=body,
                         sender=sender,
-                        classification_info = classification)
-                    await send_classification_data(ticket_number)
+                        classification_info = classification,
+                        status="new")
+                    await send_classification_data(uuidd)
             else :
                 # processing previously process email
                 print(f"Email ID: {sender} => Ticket: {ticket_number} => Duplicate")
                 old_classification = storage.get_request(ticket_number)["classification_info"]
                 new_classification = update_request_for_duplicate(subject, body, attachment_text, old_classification)
+                # nc = classify_email(subject, body, attachment_text)
+                # new_classification = update_request_prompt(nc,old_classification)
                 # storage.update_request(ticket_number, new_classification)
-                storage.update_request_with_thread(ticket_number, new_classification, subject, email)
-                await send_classification_data(ticket_number)
+                # uuid = storage.update_request_with_thread(ticket_number, new_classification, subject, email, sender=sender)
+                # await send_classification_data(uuid)
+                if new_classification:
+                    print(f"🔍 Email Classified as: {json.dumps(new_classification, indent=4)}")
+                    uuidd =storage.add_request(
+                        ticket_id=ticket_number,
+                        email_subject=subject,
+                        email_body=body,
+                        sender=sender,
+                        classification_info = new_classification,
+                        status="updated")
+                    await send_classification_data(uuidd)
 
     except Exception as e:
         print(f"Error while processing emails: {e}")

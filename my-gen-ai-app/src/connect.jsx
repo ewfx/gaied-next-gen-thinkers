@@ -7,9 +7,10 @@ import BadgeComp from "./BadgeComp";
 import Badge from "@mui/material/Badge";
 import BasicPie from "./PieChart";
 import ControlledSwitches from "./swich";
-
+let pData = [];
 const WebSocketComponent = () => {
   const [data, setData] = useState([{}]);
+  const [payloadData, setPayloadData] = useState([]);
   const [row, setRow] = useState([{}]);
   const [rowData, setRowData] = useState([{}]);
   const [headCells, setHeadCells] = useState([{}]);
@@ -57,11 +58,11 @@ const formatData=(serverData)=>{
 }
 
   useEffect(() => {
-    fetch("http://localhost:3000/data")
-      .then((response) => response.json())
-      .then((serverData) => {
-      })
-      .catch((error) => console.error("Error fetching data:", error));
+    // fetch("http://localhost:3000/data")
+    //   .then((response) => response.json())
+    //   .then((serverData) => {
+    //   })
+    //   .catch((error) => console.error("Error fetching data:", error));
 
     const socket = new WebSocket("ws://localhost:8765");
 
@@ -76,6 +77,13 @@ const formatData=(serverData)=>{
       if(serverData?.type === "storage_data"){
        // setData([...serverData.payload]);
        formatData(serverData.payload);
+       pData = serverData.payload
+       setPayloadData(serverData.payload)
+      }
+      if(serverData?.type == "classification_data"){
+        console.log([serverData?.payload, ...pData])
+        pData = [serverData?.payload, ...pData]
+        formatData(pData)
       }
       
     };

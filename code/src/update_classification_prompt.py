@@ -2,6 +2,8 @@ import json
 from langchain_google_genai import ChatGoogleGenerativeAI
 from langchain_core.prompts.pipeline import PipelinePromptTemplate
 from langchain_core.prompts.prompt import PromptTemplate
+import google.generativeai as genai
+from utils.json_utils import clean_ai_response
 
 def update_request_for_duplicate(subject, body, attachment_text, previous_json_response):
     genai.configure(api_key="AIzaSyBgD85PrdkN2M8bFQA0HYOreAFkc_Z-TSA")  # Ensure API key is configured
@@ -29,8 +31,10 @@ def update_request_for_duplicate(subject, body, attachment_text, previous_json_r
     try:
         response = model.generate_content(prompt_duplicate_check)
         cleaned_response = response.text.strip().lstrip("```json").rstrip("```")
-        print("Updated Response: ", cleaned_response)
+        
         json_response = json.loads(cleaned_response)
+        print("Updated Response: ", json_response)
+        print("Updated Response: ", type(json_response))
         return json_response
     except Exception as e:
         print(f"Error classifying email: {e}")

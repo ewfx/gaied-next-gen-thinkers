@@ -22,7 +22,6 @@ const WebSocketComponent = () => {
 
 const formatData=(serverData)=>{
   console.log("Data from server:", serverData);
-        // setContextData({serverData, typeCount});
         setContextData(serverData);
         const rows = [];
         let headCellsTemp = [];

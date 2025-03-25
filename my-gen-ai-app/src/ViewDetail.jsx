@@ -19,10 +19,10 @@ const ViewDetail = () => {
   console.log("Context Value:", contextValue);
 
   useEffect(() => {
-    if (contextValue?.contextData?.serverData) {
+    if (contextValue?.contextData) {
       const rows = [];
       let headCellsTemp = [];
-      const filteredData = contextValue?.contextData?.serverData.filter(
+      const filteredData = contextValue?.contextData?.filter(
         (element) => element.id == id
       );
       console.log("Filtered Data:", filteredData);
@@ -56,7 +56,7 @@ const ViewDetail = () => {
         setHeadCells(headCellsTemp);
       }
     } else {
-      // navigate("/");
+      navigate("/");
     }
   }, [contextValue, id]);
 

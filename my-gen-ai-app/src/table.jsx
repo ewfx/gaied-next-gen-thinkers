@@ -20,7 +20,6 @@ import TextField from "@mui/material/TextField";
 import SvgMore from "@material-ui/icons/ExpandMore";
 import ExpandMoreIcon from "@mui/icons-material/ExpandMore";
 import { convertLabelToTitleCase } from "./utils/utils";
-import { Link } from 'react-router-dom';
 
 function createData(id, subject, classification, confidance, reasoning) {
   return {
@@ -254,8 +253,7 @@ export default function EnhancedTable({
 
   const viewDetails = (row) => {
     console.log(row);
-    //navigate(`/details/${row.id}`, { state: { row } });
-    navigate(`/dashboard/email-classifications/details/${row.id}`, { state: { row } });
+    navigate(`/details/${row.id}`, { state: { row } });
   };
 
   // Avoid a layout jump when reaching the last page with empty rows.
@@ -356,14 +354,12 @@ export default function EnhancedTable({
 
                     {source !== "details" && (
                     <TableCell align="left">
-                      {/* <Link onClick={() => viewDetails(row)}> */}
                       <Button
-                        variant="contained"
-                        onClick={() => viewDetails(row)}
-                        >
-                        View Detail
+                      variant="contained"
+                      onClick={() => viewDetails(row)}
+                      >
+                      View Detail
                       </Button>
-                      {/* </Link> */}
                     </TableCell>
                     )}
                   </TableRow>

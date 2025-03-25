@@ -22,7 +22,7 @@ class SRMemoryStorage:
         }
         
 
-    def add_request(self, ticket_id, sender, email_subject, email_body, classification_info, status):
+    def add_request(self, ticket_id, sender, email_subject, email_body, classification_info, status, is_duplicate=False):
         """Store a new service request in memory"""
         # if ticket_id in self.requests:
         #     raise ValueError(f"Ticket ID {ticket_id} already exists")
@@ -33,6 +33,7 @@ class SRMemoryStorage:
             "email_body": email_body,
             "sender": sender,
             "classification_info": classification_info,
+            "is_duplicate": is_duplicate,
             "timestamp": datetime.now().isoformat(),
             "status": status,
             "thread": [],
@@ -145,7 +146,7 @@ class SRMemoryStorage:
                 "email_subject": ticket.get("email_subject", ""),
                 "email_body": ticket.get("email_body", ""),
                 "sender": ticket.get("sender", ""),
-                "is_duplicate": False,  # Assuming default is False if not present
+                "is_duplicate": ticket.get("is_duplicate", False),  # Assuming default is False if not present
                 "classifications": ticket.get("classification_info", {"classifications":{}}).get("classifications",),
                 # "thread": thread_data,
                 "summary": ticket.get("classification_info", {"summary":""}).get("summary", ""),
@@ -167,7 +168,7 @@ class SRMemoryStorage:
                 "email_subject": ticket.get("email_subject", ""),
                 "email_body": ticket.get("email_body", ""),
                 "sender": ticket.get("sender", ""),
-                "is_duplicate": False,  # Assuming default is False if not present
+                "is_duplicate": ticket.get("is_duplicate", False),  # Assuming default is False if not present
                 "classifications": ticket.get("classification_info", {"classifications":{}}).get("classifications",),
                 # "thread": thread_data,
                 "summary": ticket.get("classification_info", {"summary":""}).get("summary", ""),

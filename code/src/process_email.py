@@ -112,7 +112,8 @@ async def process_email(mail, read_last_email = False):
                         email_body=body,
                         sender=sender,
                         classification_info = classification,
-                        status="new")
+                        status="new",
+                        is_duplicate=False)
                     await send_classification_data(uuidd)
             else :
                 # processing previously process email
@@ -132,7 +133,8 @@ async def process_email(mail, read_last_email = False):
                         email_body=body,
                         sender=sender,
                         classification_info = new_classification,
-                        status="updated")
+                        status="updated",
+                        is_duplicate=True)
                     await send_classification_data(uuidd)
 
     except Exception as e:

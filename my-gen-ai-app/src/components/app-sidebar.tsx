@@ -1,6 +1,6 @@
 "use client"
 
-import * as React from "react"
+import { useContext, useEffect, useState } from "react";
 import {
   AudioWaveform,
   BookOpen,
@@ -25,57 +25,40 @@ import {
   SidebarHeader,
   SidebarRail,
 } from "@/components/ui/sidebar"
+import { MyContext } from "../app-route";
+import { extractClassificationsDetails } from "../utils/utils";
+
+// import data from "./data.json"
 
 // This is sample data.
-const data = {
+
+const getPropertyValueCount = (data, property) => {
+    return data[property] ? data[property].length : 0;
+  };
+let data = {
   user: {
-    name: "shadcn",
-    email: "m@example.com",
-    avatar: "/avatars/shadcn.jpg",
+    name: "XYZ",
+    email: "xyz@example.com",
+    avatar: "",
   },
-  teams: [],
-  navMain: [
+  teams: [
     {
-      title: "Service Type1",
-      url: "#",
-      icon: SquareTerminal,
-      isActive: true,
-      items: [
-        {
-          title: "Sub request type1",
-          url: "#",
-        },
-        {
-          title: "Sub request type1",
-          url: "#",
-        },
-        {
-          title: "Sub request type1",
-          url: "#",
-        },
-      ],
+      name: "Loan Servicing Platform",
+      logo: GalleryVerticalEnd,
+      plan: "Service Requests",
     },
     {
-      title: "Service Type2",
-      url: "#",
-      icon: SquareTerminal,
-      isActive: true,
-      items: [
-        {
-          title: "Sub request type1",
-          url: "#",
-        },
-        {
-          title: "Sub request type1",
-          url: "#",
-        },
-        {
-          title: "Sub request type1",
-          url: "#",
-        },
-      ],
+      name: "Acme Corp.",
+      logo: AudioWaveform,
+      plan: "Startup",
     },
+    {
+      name: "Evil Corp.",
+      logo: Command,
+      plan: "Free",
+    }
   ],
+  navMain: [],
   projects: [
     {
       name: "Design Engineering",
@@ -96,6 +79,32 @@ const data = {
 }
 
 export function AppSidebar({ ...props }: React.ComponentProps<typeof Sidebar>) {
+  const { contextData } = useContext(MyContext);
+  const [classificationDetails, setClassificationDetails] = useState(contextData?.payload)
+  
+  useEffect(() => {
+    const extractOuput = extractClassificationsDetails(contextData?.payload);
+    setClassificationDetails(extractOuput);
+    classificationDetails && Object.keys(classificationDetails).map((item) => {
+      if((item !== '0' && item !== '1')){
+        const requestCount = getPropertyValueCount(extractOuput, item);
+        
+        return  data.navMain.push({
+          title: `${item} (${requestCount})`,
+          url: "#/",
+          icon: SquareTerminal,
+          isActive: true,
+          items: classificationDetails[item].map((subItem) => {
+            return {
+              title: subItem,
+              url: "#/",
+              isActive: true,
+            }
+          })
+    })
+      }
+    })
+  }, [contextData])
   return (
     <Sidebar collapsible="icon" {...props}>
       <SidebarHeader>
@@ -103,7 +112,6 @@ export function AppSidebar({ ...props }: React.ComponentProps<typeof Sidebar>) {
       </SidebarHeader>
       <SidebarContent>
         <NavMain items={data.navMain} />
-        <NavProjects projects={data.projects} />
       </SidebarContent>
       <SidebarFooter>
         <NavUser user={data.user} />

@@ -21,6 +21,7 @@ const WebSocketComponent = () => {
 
 const formatData=(serverData)=>{
   console.log("Data from server:", serverData);
+        // setContextData({serverData, typeCount});
         setContextData(serverData);
         const rows = [];
         let headCellsTemp = [];
@@ -57,11 +58,11 @@ const formatData=(serverData)=>{
 }
 
   useEffect(() => {
-    fetch("http://localhost:3000/data")
-      .then((response) => response.json())
-      .then((serverData) => {
-      })
-      .catch((error) => console.error("Error fetching data:", error));
+    // fetch("http://localhost:3000/data")
+    //   .then((response) => response.json())
+    //   .then((serverData) => {
+    //   })
+    //   .catch((error) => console.error("Error fetching data:", error));
 
     const socket = new WebSocket("ws://localhost:8765");
 

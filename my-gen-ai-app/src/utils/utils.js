@@ -61,4 +61,33 @@ export function createData(obj) {
   }
   return []
 }
+
+export const getTopRequestTypes = (emails, topN = 3) => {
+  const requestCount = {};
+
+  emails.forEach(email => {
+      // Find classification with highest confidence score
+      const highestClassification = email.classifications.reduce((max, curr) =>
+          curr.confidence_score > max.confidence_score ? curr : max, { confidence_score: -1 });
+
+      if (highestClassification.confidence_score > 0 || highestClassification.confidence_score === 0) {
+          const requestType = highestClassification.request_type;
+          requestCount[requestType] = (requestCount[requestType] || 0) + 1;
+
+          // Count sub-request types if available
+          if (highestClassification.sub_request_type && highestClassification.sub_request_type.length > 0) {
+              highestClassification.sub_request_type.forEach(subType => {
+                  const subRequestType = `${requestType} - ${subType.sub_request_type}`;
+                  requestCount[subRequestType] = (requestCount[subRequestType] || 0) + 1;
+              });
+          }
+      }
+  });
+
+  // Sort by count (descending) and get top N request types
+  return Object.entries(requestCount)
+      .sort((a, b) => b[1] - a[1])
+      .slice(0, topN)
+      .reduce((acc, [key, value]) => ({ ...acc, [key]: value }), {}); // Convert back to object
+};
   

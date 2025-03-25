@@ -6,7 +6,7 @@ import { SectionCards } from "@/components/section-cards"
 import { SiteHeader } from "@/components/site-header"
 import { SidebarInset, SidebarProvider } from "@/components/ui/sidebar"
 import { MyContext } from "./app-route";
-import { extractClassificationsDetails } from "./utils/utils";
+import { getTopRequestTypes } from "./utils/utils";
 import { Outlet, useLocation } from "react-router-dom";
 
 export const SideBarCharts = ({ totalCount, topThreeRequests}) => {
@@ -34,21 +34,7 @@ export default function Dashboard() {
   const location = useLocation(); // Get the current location object;
   const locationPathname = location.pathname; // Get the current location pathname;
   const isEmailClassification = locationPathname.includes("email-classifications") || locationPathname.includes("configuration") || locationPathname.includes("create-service-request-demo");
-  console.log("Is Email Classification:", isEmailClassification);  
-  const getTotalCount = (data) => {
-    return data && Object.keys(data).length + Object.values(data).reduce((acc, arr) => acc + arr.length, 0);
-  };
-  
-  const getTopThreeMaxCountKeys = (data) => {
-    return Object.entries(data)
-      .map(([key, value]) => ({ key, count: value.length }))
-      .sort((a, b) => b.count - a.count)
-      .slice(0, 3)
-      .reduce((acc, { key, count }) => {
-        acc[key] = count;
-        return acc;
-      }, {});
-  };
+  console.log("Is Email Classification:", isEmailClassification);   
   useEffect(() => {
     const socket = new WebSocket("ws://localhost:8765");
 
@@ -63,9 +49,10 @@ export default function Dashboard() {
       if(serverData?.type === "storage_data"){
         setContextData(serverData);
         console.log("Context Value:", contextData?.payload);
-        const extractOuput = extractClassificationsDetails(contextData?.payload);
-        const totalCount = getTotalCount(extractOuput)
-        const topThreeRequests = getTopThreeMaxCountKeys(extractOuput);
+        //const extractOuput = extractClassificationsDetails(contextData?.payload);
+        const totalCount = contextData?.payload?.length; //getTotalCount(extractOuput)
+        const topThreeRequests = getTopRequestTypes(contextData?.payload);
+        console.log('topThreeRequests', topThreeRequests);
         setTotalCount(totalCount);
         setTopThreeRequests(topThreeRequests);
       }

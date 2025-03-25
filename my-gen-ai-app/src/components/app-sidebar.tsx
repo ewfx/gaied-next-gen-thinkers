@@ -32,9 +32,6 @@ import { extractClassificationsDetails } from "../utils/utils";
 
 // This is sample data.
 
-const getPropertyValueCount = (data, property) => {
-    return data[property] ? data[property].length : 0;
-  };
 let data = {
   user: {
     name: "XYZ",
@@ -87,10 +84,8 @@ export function AppSidebar({ ...props }: React.ComponentProps<typeof Sidebar>) {
     setClassificationDetails(extractOuput);
     classificationDetails && Object.keys(classificationDetails).map((item) => {
       if((item !== '0' && item !== '1')){
-        const requestCount = getPropertyValueCount(extractOuput, item);
-        
         return  data.navMain.push({
-          title: `${item} (${requestCount})`,
+          title: item,
           url: "#/",
           icon: SquareTerminal,
           isActive: true,

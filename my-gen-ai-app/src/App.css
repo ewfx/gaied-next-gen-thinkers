@@ -43,9 +43,6 @@
 
 
 .banner {
-  width: 80%;
-  float: right;
-  border-radius: 10px;
   background: linear-gradient(135deg, #4CAF50, #2E8B57);
   color: white;
   text-align: center;

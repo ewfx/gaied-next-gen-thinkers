@@ -20,7 +20,7 @@ This project leverages Generative AI and OCR to classify emails and extract key 
 ## 🎥 Demo
 🔗 [Live Demo](#) (if applicable)  
 📹 [Video Demo](#)
-[Video1]<video controls src="artifacts/demo/demo_1_realtime_processing.mp4" title="Title"></video>
+[Video1](artifacts/demo/demo_1_realtime_processing.mp4)<video controls src="artifacts/demo/demo_1_realtime_processing.mp4" title="Title"></video>
 [Video2](artifacts/demo/demo_2_duplicate_handling.mkv)  
 🖼️ Screenshots:
 

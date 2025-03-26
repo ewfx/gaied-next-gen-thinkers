@@ -20,8 +20,8 @@ storage = SRMemoryStorage()
 def initialize_email_connection():
     """Initialize and return an IMAP email connection."""
     # Gmail IMAP credentials
-    EMAIL = os.getenv("EMAIL")  # Replace with your email "jagadeesh.soppimat@gmail.com","nextgenthinkers2025@gmail.com"
-    PASSWORD = os.getenv("PASSWORD")  # Use App Password if needed "wiax ixav dqzz xzif", "whvh mirp guwi yquu"
+    EMAIL = os.getenv("EMAIL")  # Replace with your email "nextgenthinkers2025@gmail.com"
+    PASSWORD = os.getenv("PASSWORD")  # Use App Password if needed "whvh mirp guwi yquu"
     IMAP_SERVER = os.getenv("IMAP_SERVER")  # Change if using Outlook/Yahoo
 
     try:

@@ -1,4 +1,5 @@
-# 🚀 Project Name
+# 🚀 Email Classifications for Loan Servicing Platform
+
 
 ## 📌 Table of Contents
 - [Introduction](#introduction)
@@ -14,47 +15,66 @@
 ---
 
 ## 🎯 Introduction
-A brief overview of your project and its purpose. Mention which problem statement are your attempting to solve. Keep it concise and engaging.
+This project leverages Generative AI and OCR to classify emails and extract key information for a loan servicing platform. It automates the processing of incoming service requests, reducing manual effort and improving turnaround time.
 
 ## 🎥 Demo
 🔗 [Live Demo](#) (if applicable)  
 📹 [Video Demo](#) (if applicable)  
 🖼️ Screenshots:
 
-![Screenshot 1](link-to-image)
+![Screenshot][text](artifacts/arch/Hachathon2025_snaps.docx)
+![Flow Diagram][text](artifacts/arch/FlowDiagram.pptx)
+![PPT](link-to-image)[text](artifacts/arch/Hackathon_PPT_Next_Gen_Thinkers_Final.pptx)
 
 ## 💡 Inspiration
-What inspired you to create this project? Describe the problem you're solving.
+Loan servicing platforms receive a high volume of customer emails, often containing critical service requests and attachments. Manually sorting and responding to these emails is time-consuming and prone to errors. This project automates the classification of emails and extraction of relevant data, enhancing efficiency and accuracy.
 
 ## ⚙️ What It Does
-Explain the key features and functionalities of your project.
+- Automatically classifies emails into predefined categories (e.g., Payment Inquiry, Loan Adjustment, Account Closure).
+- Extracts relevant data from email bodies and attachments (PDFs, Word documents) using OCR.
+- Identifies duplicate information from email forwards and replies, updating existing service requests if relevant (e.g., amount changes, deal name changes); otherwise, marking them as duplicates.
+- Classifies emails based on priority, considering the email body first. If the body contains minimal information, attachments are prioritized for classification.
+- Assigns confidence scores to classifications and handles cases where multiple classifications have equal scores.
+- Enables seamless integration with loan servicing workflows.
 
 ## 🛠️ How We Built It
-Briefly outline the technologies, frameworks, and tools used in development.
+- Utilized Gemini AI models for text classification.
+- Integrated OCR technology (Tesseract) for extracting text from attachments.
+- Developed a pipeline to filter, classify, and extract email content efficiently.
+- Implemented the solution using Gemini AI models, LangChain, OCR, Python, React and Material UI.
+- Stored extracted data in a structured format for downstream processing.
 
 ## 🚧 Challenges We Faced
-Describe the major technical or non-technical challenges your team encountered.
+- Handling low-confidence classifications and ensuring accurate email routing.
+- Processing large attachments efficiently without performance bottlenecks.
+- Managing diverse email formats and unstructured text content.
+- Ensuring security and compliance with data privacy regulations.
 
 ## 🏃 How to Run
 1. Clone the repository  
    ```sh
-   git clone https://github.com/your-repo.git
+   git clone https://github.com/ewfx/gaied-next-gen-thinkers
    ```
 2. Install dependencies  
    ```sh
-   npm install  # or pip install -r requirements.txt (for Python)
+   npm install  # for react
+   pip install -r requirements.txt # for Python
+   configure IMAP # for testing our solution
    ```
 3. Run the project  
    ```sh
-   npm start  # or python app.py
+   npm run dev  # for react UI
+   python process_email.py # for python
    ```
 
 ## 🏗️ Tech Stack
-- 🔹 Frontend: React / Vue / Angular
-- 🔹 Backend: Node.js / FastAPI / Django
-- 🔹 Database: PostgreSQL / Firebase
-- 🔹 Other: OpenAI API / Twilio / Stripe
+- 🔹 Frontend: React, Material UI
+- 🔹 Backend: Node.js
+- 🔹 Database:
+- 🔹 Other: Langchain, IMAP
+- 🔹 AI & NLP: Gemini AI for text classification
+- 🔹 OCR: Tesseract
 
 ## 👥 Team
-- **Your Name** - [GitHub](#) | [LinkedIn](#)
+- **Your Name** - NextGenThinkers
 - **Teammate 2** - [GitHub](#) | [LinkedIn](#)

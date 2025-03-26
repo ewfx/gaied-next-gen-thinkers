@@ -19,12 +19,14 @@ This project leverages Generative AI and OCR to classify emails and extract key 
 
 ## 🎥 Demo
 🔗 [Live Demo](#) (if applicable)  
-📹 [Video Demo](#) (if applicable)  
+📹 [Video Demo](#)
+[Video1]<video controls src="artifacts/demo/demo_1_realtime_processing.mp4" title="Title"></video>
+[Video2](artifacts/demo/demo_2_duplicate_handling.mkv)  
 🖼️ Screenshots:
 
-![Screenshot][text](artifacts/arch/Hachathon2025_snaps.docx)
-![Flow Diagram][text](artifacts/arch/FlowDiagram.pptx)
-![PPT](link-to-image)[text](artifacts/arch/Hackathon_PPT_Next_Gen_Thinkers_Final.pptx)
+![Screenshot][Hackathon2025_snaps](artifacts/arch/Hachathon2025_snaps.docx)
+![Flow Diagram][FlowDiagram](artifacts/arch/FlowDiagram.pptx)
+![PPT](link-to-image)[PPT](artifacts/arch/Hackathon_PPT_Next_Gen_Thinkers_Final.pptx)
 
 ## 💡 Inspiration
 Loan servicing platforms receive a high volume of customer emails, often containing critical service requests and attachments. Manually sorting and responding to these emails is time-consuming and prone to errors. This project automates the classification of emails and extraction of relevant data, enhancing efficiency and accuracy.
